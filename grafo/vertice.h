@@ -74,9 +74,13 @@ int vertice_get_dist(vertice_t *vertice);
 void vertice_set_pai_nulo(vertice_t* vertice);
 
 
-void set_visitado(vertice_t* vertice, int st);
+void vertice_set_visitado(vertice_t* vertice, int st);
 
 int get_visitado(vertice_t* vertice);
+
+int aresta_get_check(arestas_t* a);
+
+void aresta_set_check(arestas_t* a);
 
 
 /* Obtem vertice antecessor do menor caminho.

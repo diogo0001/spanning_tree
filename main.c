@@ -66,9 +66,6 @@ int main(void)
     vertice = grafo_adicionar_vertice(grafo,12);
     enqueue(vertice, fila);
 
-    vertice = grafo_adicionar_vertice(grafo,13);
-    enqueue(vertice, fila);
-
 
 
     // constrói grafo
@@ -92,7 +89,7 @@ int main(void)
             adiciona_adjacentes(grafo, vertice, 6, 5, 6, 3, 11, 2, 15);
             break;
         case 5:
-            adiciona_adjacentes(grafo, vertice, 4, 6, 9, 4, 6);
+            adiciona_adjacentes(grafo, vertice, 6, 6, 9, 4, 6,12,5);
             break;
         case 6:
             adiciona_adjacentes(grafo, vertice, 6, 1, 14, 3, 2, 5, 9);
@@ -104,7 +101,7 @@ int main(void)
             adiciona_adjacentes(grafo, vertice, 4, 7, 9, 9, 4);
             break;
         case 9:
-            adiciona_adjacentes(grafo, vertice, 2, 8, 4);
+            adiciona_adjacentes(grafo, vertice, 4, 8, 4,12,4);
             break;
         case 10:
             adiciona_adjacentes(grafo, vertice, 4, 11, 1, 12, 8);
@@ -113,7 +110,7 @@ int main(void)
             adiciona_adjacentes(grafo, vertice, 4, 10, 1, 12, 4);
             break;
         case 12:
-            adiciona_adjacentes(grafo, vertice, 4, 11, 4, 10, 8);
+            adiciona_adjacentes(grafo, vertice, 8, 11, 4, 10, 8, 5,5, 9,4);
             break;
         default:
             break;
@@ -123,9 +120,10 @@ int main(void)
 
     //printf("%d %d %d\n",vertice_get_id(vertice),ver)
 
-    bfs(grafo,procura_vertice(grafo,1));
-    dfs(grafo,procura_vertice(grafo,1));
+    //bfs(grafo,procura_vertice(grafo,1));
+    //dfs(grafo,procura_vertice(grafo,1));
 
+    kruskal(grafo);
     exportar_grafo_dot("grafo.dot", grafo);
 
     libera_fila(fila);

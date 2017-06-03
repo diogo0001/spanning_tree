@@ -21,7 +21,8 @@
 #define FALSE 0
 #define TRUE 1
 
-//#define DEBUG
+#define DEBUG
+#define DEBUG_K
 
 #define INFINITO INT_MAX
 
@@ -101,7 +102,7 @@ void bfs(grafo_t *grafo, vertice_t* inicial)
     //free(lista);
     free(fila);
 
-    printf("\nGrau: %d\n\n",grau);
+    printf("\nGrau: %d",grau);
     tree = cria_arvore(grau,0);
 
 }
@@ -127,7 +128,7 @@ void dfs(grafo_t *grafo, vertice_t* inicial)
     while (no)
     {
         v = (vertice_t*)obter_dado(no);
-        set_visitado(v,FALSE);
+        vertice_set_visitado(v,FALSE);
         no = obtem_proximo(no);
     }
 
@@ -142,7 +143,7 @@ void dfs(grafo_t *grafo, vertice_t* inicial)
 
         if (get_visitado(u) == FALSE)
         {
-            set_visitado(u,TRUE);
+            vertice_set_visitado(u,TRUE);
 
             while(no2)
             {
@@ -152,7 +153,7 @@ void dfs(grafo_t *grafo, vertice_t* inicial)
             }
         }
 
-        printf("\n");
+        printf("\n\n");
     }
     //free(lista);
     free(pilha);
@@ -276,7 +277,7 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 #ifdef DEBUG
         printf("\tvertice: %d\n", vertice_get_id(vertice));
         printf("\tsucessor: %d\n", id_sucessor);
-        printf("\tpeso: %d\n", peso);
+        printf("\tpeso: %d\n\n", peso);
 #endif
 
     }
@@ -411,6 +412,151 @@ void libera_grafo (grafo_t *grafo)
     free(grafo->vertices);
     free(grafo);
 }
+
+
+
+
+
+arvore_t* kruskal(grafo_t *grafo)
+{
+    if (grafo == NULL)
+    {
+        perror("kruskal: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v,*u;
+    fila_t *fila;
+    lista_enc_t *lista;
+    arestas_t *a, **a_sort;
+    fila = cria_fila();
+
+    int counter = 0;
+    int grau = 0;
+    int grau_count = 0;
+    int i;
+    arvore_t *tree;
+
+    while (no)                              // varre a lista de vertices do grafo
+    {
+        v = (vertice_t*)obter_dado(no);     // obtem um vertice, pega a sua lista arestas e marca este como visitado (flag 1)
+        vertice_set_visitado(v,1);          
+        lista = vertice_get_arestas(v);     // obtem uma aresta, e assim até acabar a lista de arestas
+        no2 = obter_cabeca(lista);
+
+        #ifdef DEBUG_K
+            printf("\n\nVertice id: %d\n", vertice_get_id(v));
+        #endif
+
+        while(no2)                                       // colocará todas as arestas em uma fila, sem repeli-las
+        {
+            a = (arestas_t*)obter_dado(no2);
+
+            if(get_visitado(aresta_get_adjacente(a)) == 0){   // verifica se a aresta já foi visitada testando a flag "visitado" do  vertice adjacente                                                
+               
+                enqueue(a,fila);                         // add na fila
+                counter++;                               // incrementa contador para debug
+                
+                #ifdef DEBUG_K
+                printf("\nAresta numero: %d da fila", counter);
+                printf("\nPeso: %d", aresta_get_peso(a));
+                printf("\nAdjacente: %d \n", vertice_get_id(aresta_get_adjacente(a)));
+                #endif
+            }
+            no2 = obtem_proximo(no2);
+        }
+        no = obtem_proximo(no);
+    }
+
+    fila = fila_de_prioridade(fila);            // criada a fila de arestas!! ...  aresta de menor peso na cabeça...
+                                                // para cada iteração será necessário chamar a fila de prioridades para colocar o menor no topo.
+                                                // pode não ser a opção mais eficiente, talvez uma única ordenação (heap) seja melhor, nesse caso
+                                                // utilizar um array com índices poderia ser mais interessante (array de ponteiros duplos arestas_t **array) 
+/*                      
+    while(!fila_vazia(fila)){
+
+        a = dequeue(fila);
+        fila = fila_de_prioridade(fila);
+
+
+    }
+*/
+
+
+    //free(lista);
+    //free(fila);
+
+    //printf("\nGrau: %d",grau);
+    tree = cria_arvore(grau,0);
+
+    return tree;
+}
+
+
+fila_t* fila_de_prioridade(fila_t* f)
+{
+    if(f == NULL)
+    {
+        perror("fila_de_prioridade");
+        exit(1);
+    }
+
+    arestas_t *p1;
+    arestas_t *p2;
+    arestas_t *temp;
+    arestas_t *minimo;
+    fila_t *faux = cria_fila();
+
+    p1 = dequeue(f);
+    minimo = p1;                                   // apenas para inicializar com algum dado, no while ele sera atualizado
+
+    while(!fila_vazia(f))                       // while para encontrar o maior
+    {
+        p2 = dequeue(f);
+
+        if(aresta_get_peso(p1) < aresta_get_peso(p2))               // pega o maior da comparação entre os 2 consecutivos
+            temp = p1;
+        else
+            temp = p2;
+
+        if(aresta_get_peso(temp) < aresta_get_peso(minimo))            // compara o maior dos consecutivos com o maior geral
+            minimo = temp;
+
+        #ifdef DEBUG
+            printf("\nPeso atual do topo: %d",aresta_get_peso(minimo));
+        #endif //
+
+        enqueue(p1,faux);                       // coloca na fila auxiliar na mesma ordem
+        p1 = p2;
+    }
+    enqueue(p1,faux);                       // coloca o ultimo na fila
+
+    enqueue(minimo,f);                         // coloca o mais velho na cabeça da fila
+
+    #ifdef DEBUG
+        printf("\n\nPeso do topo: %d",aresta_get_peso(minimo));
+    #endif
+
+    while(!fila_vazia(faux))
+    {
+        p1 = dequeue(faux);
+
+        if(p1 != minimo){
+            enqueue(p1,f);                      // compara os ponteiros, pois o minimo sera igual a algum elemento da fila, terá o mesmo endereço
+            #ifdef DEBUG
+            printf("\nEnqueue fila_de_prioridade: %d",aresta_get_peso(p1));
+            #endif
+        }
+    }
+
+    libera_fila(faux);
+
+    return f;
+}
+
 
 
 

@@ -10,6 +10,8 @@
 
 #include "vertice.h"
 #include "../pilha/pilha.h"
+#include "../arvore/sub_arvore.h"
+#include "../fila/fila.h"
 
 typedef struct grafos grafo_t;
 
@@ -57,9 +59,9 @@ void bfs(grafo_t *grafo, vertice_t* inicial);
 
 void dfs(grafo_t *grafo, vertice_t* inicial);
 
+arvore_t* kruskal(grafo_t *grafo);
 
-
-
+fila_t* fila_de_prioridade(fila_t* f);
 
 
 #endif /* GRAFO_GRAFO_H_ */

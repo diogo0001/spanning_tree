@@ -28,6 +28,7 @@ struct arestas
     int peso;
     vertice_t *fonte;
     vertice_t *dest;
+    int check;
 
     /* status para expotacao em arquivo */
     status_aresta_t status;
@@ -50,6 +51,7 @@ vertice_t *cria_vertice(int id)
     p->arestas = cria_lista_enc();
     p->id_grupo = -1;
     p->pai = NULL;
+    p->visitado = 0;
 
     return p;
 }
@@ -80,6 +82,7 @@ arestas_t *cria_aresta(vertice_t *fonte, vertice_t *destino, int peso)
     p->peso = peso;
     p->fonte = fonte;
     p->dest = destino;
+    p->check = 0;
 
     return p;
 }
@@ -258,7 +261,7 @@ void vertice_set_pai_nulo(vertice_t* vertice)
 }
 
 
-void set_visitado(vertice_t* vertice, int st)
+void vertice_set_visitado(vertice_t* vertice, int st)
 {
     if (vertice == NULL)
     {
@@ -278,6 +281,28 @@ int get_visitado(vertice_t* vertice)
     }
 
     return vertice->visitado;
+}
+
+int aresta_get_check(arestas_t* a){
+
+    if (a == NULL)
+    {
+        fprintf(stderr, "aresta_get_check: aresta invalida\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return a->check;
+}
+
+
+void aresta_set_check(arestas_t* a){
+
+    if (a == NULL)
+    {
+        fprintf(stderr, "aresta_set_check: aresta invalida\n");
+        exit(EXIT_FAILURE);
+    }
+     a->check = 1;
 }
 
 //
