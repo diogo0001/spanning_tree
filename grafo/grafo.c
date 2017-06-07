@@ -1,10 +1,3 @@
-/*
- * grafo.c
- *
- *  Created on: Jul 5, 2016
- *      Author: Renan Augusto Starke
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -31,134 +24,6 @@ struct grafos
     int id;
     lista_enc_t *vertices;
 };
-
-
-void bfs(grafo_t *grafo, vertice_t* inicial)
-{
-     if (grafo == NULL || inicial == NULL)
-    {
-        perror("busca_largura: ponteiro invalido.");
-        exit(EXIT_FAILURE);
-    }
-
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v,*u;
-    fila_t *fila, *fila_aux;
-    lista_enc_t *lista;
-    arestas_t *a;
-    fila = cria_fila();
-
-    grafo_t* G = cria_grafo(1);                 // estruturas auxiliares
-    fila_aux = cria_fila();
-
-    int grau = 0;
-    int grau_count = 0;
-    arvore_t *tree;
-
-    while (no)
-    {
-        v = (vertice_t*)obter_dado(no);
-        vertice_set_dist(v,INFINITO);
-        vertice_set_pai_nulo(v);
-        no = obtem_proximo(no);
-    }
-
-
-    vertice_set_dist(inicial,0);
-    enqueue(inicial,fila);
-
-    while(!fila_vazia(fila))
-    {
-        u = dequeue(fila);
-        lista = vertice_get_arestas(u);
-        no2 = obter_cabeca(lista);
-        printf("Dequeue v: %d\n", vertice_get_id(u));
-
-        while(no2)
-        {
-            a = (arestas_t*)obter_dado(no2);
-            v = aresta_get_adjacente(a);
-            if (vertice_get_dist(v) == INFINITO)                // se não foi visitado
-            {
-                vertice_set_dist(v,vertice_get_dist(u)+1);      // seta o nivel
-                vertice_set_pai(v,u);
-                enqueue(v,fila);
-                printf("Enqueue v: %d\n", vertice_get_id(v));
-                grau_count++;
-            }
-
-            no2 = obtem_proximo(no2);
-        }
-        printf("\n");
-
-        if(grau <= grau_count)
-            grau = grau_count;
-
-        grau_count = 0;
-    }
-
-    //free(lista);
-    free(fila);
-
-    printf("\nGrau: %d",grau);
-    tree = cria_arvore(grau,0);
-
-}
-
-
-void dfs(grafo_t *grafo, vertice_t* inicial)
-{
-    if (grafo == NULL || inicial == NULL)
-    {
-        perror("busca_largura: ponteiro invalido.");
-        exit(EXIT_FAILURE);
-    }
-
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v,*u;
-    pilha_t * pilha;
-    lista_enc_t *lista;
-    arestas_t *a;
-    pilha = cria_pilha();
-
-    while (no)
-    {
-        v = (vertice_t*)obter_dado(no);
-        vertice_set_visitado(v,FALSE);
-        no = obtem_proximo(no);
-    }
-
-    push(inicial,pilha);
-
-    while(!pilha_vazia(pilha))
-    {
-        u = pop(pilha);
-        lista = vertice_get_arestas(u);             // pega a lista de arestas de cada vertice
-        no2 = obter_cabeca(lista);                  // pega a cabeça da lista de arestas
-        printf("Pop u: %d\n", vertice_get_id(u));
-
-        if (get_visitado(u) == FALSE)
-        {
-            vertice_set_visitado(u,TRUE);
-
-            while(no2)
-            {
-                v = (vertice_t*)obter_dado(no2);
-                push(v,pilha);
-                no2 = obtem_proximo(no2);
-            }
-        }
-
-        printf("\n\n");
-    }
-    //free(lista);
-    free(pilha);
-
-}
 
 //--------------------------------------------------------------------------------------
 
@@ -558,6 +423,119 @@ fila_t* fila_de_prioridade(fila_t* f)
 }
 
 
+void bfs(grafo_t *grafo, vertice_t* inicial)
+{
+     if (grafo == NULL || inicial == NULL)
+    {
+        perror("busca_largura: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v,*u;
+    fila_t *fila, *fila_aux;
+    lista_enc_t *lista;
+    arestas_t *a;
+    fila = cria_fila();
+
+    while (no)
+    {
+        v = (vertice_t*)obter_dado(no);
+        vertice_set_dist(v,INFINITO);
+        vertice_set_pai_nulo(v);
+        no = obtem_proximo(no);
+    }
+
+    vertice_set_dist(inicial,0);
+    enqueue(inicial,fila);
+
+    while(!fila_vazia(fila))
+    {
+        u = dequeue(fila);
+        lista = vertice_get_arestas(u);
+        no2 = obter_cabeca(lista);
+        printf("Dequeue v: %d\n", vertice_get_id(u));
+
+        while(no2)
+        {
+            a = (arestas_t*)obter_dado(no2);
+            v = aresta_get_adjacente(a);
+            if (vertice_get_dist(v) == INFINITO)                // se não foi visitado
+            {
+                vertice_set_dist(v,vertice_get_dist(u)+1);      // seta o nivel
+                vertice_set_pai(v,u);
+                enqueue(v,fila);
+                printf("Enqueue v: %d\n", vertice_get_id(v));
+                grau_count++;
+            }
+
+            no2 = obtem_proximo(no2);
+        }
+        printf("\n");
+
+        if(grau <= grau_count)
+            grau = grau_count;
+
+        grau_count = 0;
+    }
+
+    //free(lista);           //necessário adaptar caso necessáio utilizar
+    free(fila);
+}
+
+
+void dfs(grafo_t *grafo, vertice_t* inicial)
+{
+    if (grafo == NULL || inicial == NULL)
+    {
+        perror("busca_largura: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v,*u;
+    pilha_t * pilha;
+    lista_enc_t *lista;
+    arestas_t *a;
+    pilha = cria_pilha();
+
+    while (no)
+    {
+        v = (vertice_t*)obter_dado(no);
+        vertice_set_visitado(v,FALSE);
+        no = obtem_proximo(no);
+    }
+
+    push(inicial,pilha);
+
+    while(!pilha_vazia(pilha))
+    {
+        u = pop(pilha);
+        lista = vertice_get_arestas(u);             // pega a lista de arestas de cada vertice
+        no2 = obter_cabeca(lista);                  // pega a cabeça da lista de arestas
+        printf("Pop u: %d\n", vertice_get_id(u));
+
+        if (get_visitado(u) == FALSE)
+        {
+            vertice_set_visitado(u,TRUE);
+
+            while(no2)
+            {
+                v = (vertice_t*)obter_dado(no2);
+                push(v,pilha);
+                no2 = obtem_proximo(no2);
+            }
+        }
+
+        printf("\n\n");
+    }
+    //free(lista);                      //necessário adaptar caso necessáio utilizar
+    free(pilha);   
+}
 
 
 
