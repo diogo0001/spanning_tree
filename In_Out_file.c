@@ -22,6 +22,7 @@ struct struc_arquivo {
     int coordX2;
     int coordY2;
     int peso;
+    int mark;
     
 };
 
@@ -38,7 +39,7 @@ struc_arquivo_t* cria_coord (int pai_id,int x, int y,int ide, int x2,int y2, flo
     dado->coordX2 = x2;
     dado->coordY2 = y2;
     dado->peso = 0;
-    
+    dado->mark = -1;
     
     return dado;
 }
@@ -66,12 +67,14 @@ lista_enc_t* ler_arquivo(char *nomeArquivo, int *tamanho){
         
         fgets(buffer,80,fp);
         if (feof(fp)) break;
-        tam++;
         
+        tam++;
+       
     }
     printf("tamanho = %d\n",tam);
     rewind(fp);
     fgets(buffer,80,fp);
+ 
     int pai_id;
     int x2;
     int y2;
@@ -107,11 +110,12 @@ lista_enc_t* ler_arquivo(char *nomeArquivo, int *tamanho){
         add_cauda(lista,no);
         
         //   no = obtem_proximo(no);
-        
+         *tamanho = dado->id;
     }
     
     fclose(fp);
-    *tamanho = sqrt(tam);
+   
+    
     return lista;
     
     
