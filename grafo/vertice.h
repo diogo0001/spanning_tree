@@ -38,6 +38,8 @@ int aresta_get_peso (arestas_t *aresta);
 /* Obtem o destinho de uma aresta */
 vertice_t *aresta_get_adjacente(arestas_t *aresta);
 
+vertice_t* aresta_get_fonte(arestas_t *aresta);
+
 /* Retorna uma aresta caso seja fonte ou destino */
 arestas_t *procurar_adjacente(vertice_t *vertice, vertice_t *adjacente);
 
@@ -81,6 +83,10 @@ int get_visitado(vertice_t* vertice);
 int aresta_get_check(arestas_t* a);
 
 void aresta_set_check(arestas_t* a);
+
+int vertice_get_grau(vertice_t* v);
+
+void vertice_set_grau(vertice_t* v, int grau);
 
 
 /* Obtem vertice antecessor do menor caminho.

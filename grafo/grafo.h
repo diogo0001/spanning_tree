@@ -63,5 +63,22 @@ arvore_t* kruskal(grafo_t *grafo);
 
 fila_t* fila_de_prioridade(fila_t* f);
 
+arestas_t** swapp(arestas_t** vet, int i, int j);
+
+arestas_t** heap(arestas_t **vet,int tm);
+
+arestas_t** heapfy(arestas_t **vet, int ini, int fim);
+
+vertice_t** inicia(int* vet_tm, int vert_num, vertice_t** chefe);
+
+sub_arvore_t* find(sub_arvore_t* v);
+
+sub_arvore_t* v_union(sub_arvore_t* v0, sub_arvore_t* u0);
+
+void prim(grafo_t* grafo);
+
+sub_arvore_t* pre_find(arvore_t* tree, vertice_t *v);
+
+int grafo_get_tam(grafo_t* g);
 
 #endif /* GRAFO_GRAFO_H_ */
