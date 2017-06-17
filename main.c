@@ -1,4 +1,4 @@
-/**
+/*
  ============================================================================
  Name        : grafos.c
  Author      :
@@ -16,12 +16,15 @@
 #include "pilha/pilha.h"
 #include "fila/fila.h"
 #include "grafo/grafo.h"
+#include "arvore/sub_arvore.h"
 
 int main(void)
 {
 
     grafo_t *grafo;
     vertice_t* vertice;
+    sub_arvore_t* sub;
+    arvore_t* MST;
 
     fila_t *fila;
     int id;
@@ -80,34 +83,34 @@ int main(void)
         switch(id)
         {
         case 1:
-            adiciona_adjacentes(grafo, vertice, 6, 6, 14, 2, 7, 3, 9);
+            adiciona_adjacentes(grafo, vertice, 8, 6, 14, 2, 7, 3, 9, 13, 8);
             break;
         case 2:
             adiciona_adjacentes(grafo, vertice, 6, 1, 7, 3, 10, 4, 15);
             break;
         case 3:
-            adiciona_adjacentes(grafo, vertice, 8, 6, 2, 1, 9, 2, 10, 4, 11);
+            adiciona_adjacentes(grafo, vertice, 10, 6, 2, 1, 9, 2, 10, 4, 11, 10, 4);
             break;
         case 4:
             adiciona_adjacentes(grafo, vertice, 6, 5, 6, 3, 11, 2, 15);
             break;
         case 5:
-            adiciona_adjacentes(grafo, vertice, 4, 6, 9, 4, 6);
+            adiciona_adjacentes(grafo, vertice, 6, 6, 9, 4, 6, 8, 20);
             break;
         case 6:
-            adiciona_adjacentes(grafo, vertice, 6, 1, 14, 3, 2, 5, 9);
+            adiciona_adjacentes(grafo, vertice, 6, 3, 2, 1, 14, 5, 9);
             break;
         case 7:
             adiciona_adjacentes(grafo, vertice, 2, 8, 9);
             break;
         case 8:
-            adiciona_adjacentes(grafo, vertice, 4, 7, 9, 9, 4);
+            adiciona_adjacentes(grafo, vertice, 6, 7, 9, 9, 4, 5, 20);
             break;
         case 9:
             adiciona_adjacentes(grafo, vertice, 2, 8, 4);
             break;
         case 10:
-            adiciona_adjacentes(grafo, vertice, 4, 11, 1, 12, 8);
+            adiciona_adjacentes(grafo, vertice, 8, 11, 1, 12, 8, 13, 13, 3, 4);
             break;
         case 11:
             adiciona_adjacentes(grafo, vertice, 4, 10, 1, 12, 4);
@@ -115,16 +118,22 @@ int main(void)
         case 12:
             adiciona_adjacentes(grafo, vertice, 4, 11, 4, 10, 8);
             break;
+        case 13:
+            adiciona_adjacentes(grafo, vertice, 4, 1, 8, 10, 13);
+            break;
+
         default:
             break;
         }
     }
 
 
-    //printf("%d %d %d\n",vertice_get_id(vertice),ver)
+  
 
-    bfs(grafo,procura_vertice(grafo,1));
-    dfs(grafo,procura_vertice(grafo,1));
+    MST = kruskal(grafo);                                       // kruskal retorna a arvore criada
+    
+    teste_mst(MST);                                             // função para testar os retornos
+
 
     exportar_grafo_dot("grafo.dot", grafo);
 
@@ -133,6 +142,4 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
-
 
