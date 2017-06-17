@@ -1,7 +1,7 @@
 /*
  *  Created on: Jul 5, 2016
  *      Author: Renan Augusto Starke
- *      Modifyed by: Diogo Tavares, José Nicolau Varela
+ *      Modifyed by: Diogo Tavares, José Nicolau Varela -- Fuções adicionais e modificações
  */
 
 #include <stdio.h>
@@ -52,7 +52,7 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
     vertice_t *u,*v;
     fila_t *fila;
     lista_enc_t *lista;
-    arestas_t *a, **a_sort;   //**mst; não utulizada no momento
+    arestas_t *a, **a_sort;   
     fila = cria_fila();
 
     int counter = 0;
@@ -148,11 +148,11 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
     printf("\n%d vertices\n",vert_count);
     #endif
 
-    i = 0;                                                         // counter (arestas) <  vert_count  (vertices)
+    i = 0;                                                      
 
-    while(i < vert_count){                   // enquanto ainda houver arestas
+    while(i < vert_count){                   // varre até o número total de vértices
 
-        a = a_sort[i];                                             // pega a aresta de menor peso
+        a = a_sort[i];                                             // pega a aresta de menor peso já ordenada
         u = aresta_get_fonte(a);
         v = aresta_get_adjacente(a);                               // pega os vertices da aresta
 
@@ -194,6 +194,8 @@ printf("\n\nEND_KRUSKAL --------------------------------------------------------
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Função que faz a adaptação da chamada por vertice para o retorno em sub_arvore
+
 sub_arvore_t* pre_find(arvore_t* tree, vertice_t* v)
 {
     if(v == NULL || tree == NULL){
@@ -212,7 +214,7 @@ printf("\n\nPRE_FIND -----------------------------------------------------------
     sub = obter_dado(no);
     v0 = sub_get_dado(sub);
 
-    while(vertice_get_id(v) != vertice_get_id(v0)){
+    while(vertice_get_id(v) != vertice_get_id(v0)){  // procura a sub_arvore correspondente ao vértice
         sub = obter_dado(no);
         v0 = sub_get_dado(sub);
         no = obtem_proximo(no);
@@ -227,7 +229,7 @@ printf("\n\nPRE_FIND -----------------------------------------------------------
         printf("\nId vertice 0: %2d /----/ Id sub: %d\n",vertice_get_id(v0),sub_arvore_get_id(sub));
     #endif
 
-    sub = find(sub);
+    sub = find(sub);            // com a adaptação feita, agora é possível chamar a função find()
 
     #ifdef DEBUG_PRE_FIND
         printf("\nReturn %d\n",sub_arvore_get_id(sub));
@@ -238,6 +240,8 @@ printf("\n\nPRE_FIND -----------------------------------------------------------
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Função que encontra o pai de uma árvore da floresta
+
 sub_arvore_t* find(sub_arvore_t* v)
 {
     if(v == NULL){
@@ -253,26 +257,26 @@ printf("\n\nFIND ---------------------------------------------------------------
     int level;
     v0 = v;
 
-    pai_v0 = arvore_get_pai(v0);
+    pai_v0 = arvore_get_pai(v0);        // cada sub_arvore inicial tem ela mesma como pai
     //level = set_level(pai_v0,0);
 
     #ifdef DEBUG_FIND
     printf("\nLevel: %d  --- sub : %d --- pai : %d ",get_level(v0),sub_arvore_get_id(v0),sub_arvore_get_id(pai_v0));
     #endif // DEBUG_FIND
 
-    if(v0 == pai_v0)
+    if(v0 == pai_v0)            // se v0 == pai_v0 encontrou o pai do grupo, pois o primeiro elemento tem ele mesmo como pai
         return v0;
 
     v0 = pai_v0;
 
-    v0 = find(v0);
+    v0 = find(v0);              // enquanto v0 não for igual ao seu pai chama recursivamente
 
-    return v0;
+    return v0;                  // retorna o pai do grupo
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Função v_union
+// Função que une duas asvores distindas da floresta
 
 sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0)
 {
@@ -291,24 +295,20 @@ printf("\n\nUNION --------------------------------------------------------------
     pai_v0 = arvore_get_pai(v0);
     pai_u0 = arvore_get_pai(u0);
 
-    if(get_level(v0) > get_level(u0)){
+    if(get_level(v0) > get_level(u0)){   // verifica os niveis de cada arvore, o nivel mais profundo prevalece, terá seu pai como pai 
         paizao = v0;
         set_level(v0,(get_level(v0)+1));
         add_filho(v0,pai_u0);
-        //arvore_set_pai(pai_u0,v0);
     }
 
     else{
         paizao = u0;
         set_level(u0, (get_level(u0)+1));
         add_filho(u0,pai_v0);
-        //arvore_set_pai(pai_v0,u0);
     }
 
 
     #ifdef DEBUG_UNION
-        //printf("\nLevel u0: %2d  /----/ Level v0: %d", get_level(u0),get_level(v0));
-        //printf("\nId u0 :   %2d  /----/ Id v0 : %d /----/ Id paizao : %d\n",sub_arvore_get_id(u0),sub_arvore_get_id(v0),sub_arvore_get_id(paizao));
         printf("\nId u0 : %2d  ----  Level u0:  %2d",sub_arvore_get_id(u0),get_level(u0));
         printf("\nId v0 : %2d  ----  Level v0:  %2d",sub_arvore_get_id(v0),get_level(v0));
         printf("\nId pai: %2d  ----  Level pai: %2d\n",sub_arvore_get_id(paizao), get_level(paizao));
