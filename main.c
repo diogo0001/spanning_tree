@@ -1,19 +1,5 @@
-/*
- ============================================================================
- Name        : grafos.c
- Author      :
- Version     :
- Copyright   : Renan Augusto Starke, todos os direitos reservados
- Description : grafos com lista encadeadas, Ansi-style
-             : estruturas disponiveis:
-             : pilha e fila
- ============================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "pilha/pilha.h"
 #include "fila/fila.h"
 #include "grafo/grafo.h"
 #include "arvore/sub_arvore.h"
