@@ -1,8 +1,7 @@
 /*
- * grafo.c
- *
  *  Created on: Jul 5, 2016
  *      Author: Renan Augusto Starke
+ *      Modifyed by: Diogo Tavares, José Nicolau Varela
  */
 
 #include <stdio.h>
@@ -15,151 +14,376 @@
 #include "../lista_enc/no.h"
 #include "../fila/fila.h"
 #include "../arvore/sub_arvore.h"
-
 #include "../pilha/pilha.h"
 
 #define FALSE 0
 #define TRUE 1
 
-//#define DEBUG
+#define DEBUG
+#define DEBUG_K
+//#define DEBUG_PRE_FIND
+
+#define DEBUG_FIND
+#define DEBUG_UNION
 
 #define INFINITO INT_MAX
 
 struct grafos
 {
     int id;
+    int n_vertices;
     lista_enc_t *vertices;
 };
 
 
-void bfs(grafo_t *grafo, vertice_t* inicial)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na leitura do arquivo, otimiza mto o programa.. elimina o while(no2)
 {
-     if (grafo == NULL || inicial == NULL)
+    if (grafo == NULL)
     {
-        perror("busca_largura: ponteiro invalido.");
+        perror("kruskal: ponteiro invalido.");
         exit(EXIT_FAILURE);
     }
 
     no_t *no, *no2;
     no = obter_cabeca(grafo->vertices);
 
-    vertice_t *v,*u;
-    fila_t *fila, *fila_aux;
+    vertice_t *u,*v;
+    fila_t *fila;
     lista_enc_t *lista;
-    arestas_t *a;
+    arestas_t *a, **a_sort;   //**mst; não utulizada no momento
     fila = cria_fila();
 
-    grafo_t* G = cria_grafo(1);                 // estruturas auxiliares
-    fila_aux = cria_fila();
+    int counter = 0;
+    int vert_count = 0;
+    int grau_count;
+    int i;
+    arvore_t *spanning_tree = cria_arvore();
+    sub_arvore_t *sub_tree, *s_u, *s_v;
+    sub_arvore_t *raiz = NULL;
 
-    int grau = 0;
-    int grau_count = 0;
-    arvore_t *tree;
+    #ifdef DEBUG_K
+    printf("\n\nKRUSKAL *******************************************************************\n");
+    #endif
 
-    while (no)
+    while (no)                              // varre a lista de vertices do grafo  ----MAKE-SET  (cria as sub árvores)
     {
-        v = (vertice_t*)obter_dado(no);
-        vertice_set_dist(v,INFINITO);
-        vertice_set_pai_nulo(v);
+        v = (vertice_t*)obter_dado(no);     // obtem um vertice, pega a sua lista arestas e marca este como visitado (flag 1)
+        vertice_set_visitado(v,1);
+        lista = vertice_get_arestas(v);     // obtem uma aresta, e assim até acabar a lista de arestas
+        no2 = obter_cabeca(lista);
+
+        sub_tree = cria_sub(spanning_tree,vertice_get_id(v),v);       // adiciona sub_arvore à floresta inicial
+        arvore_set_pai(sub_tree,sub_tree);                            // seta como pai de si mesma
+        //set_flag(FALSE);                                              // seta sub_arvore como não adicionada.. ao adicionar recebe flag TRUE
+
+        grau_count = 0;
+
+        #ifdef DEBUG_K
+            printf("\n\nVertice id: %d\n", vertice_get_id(v));
+        #endif
+
+
+        while(no2)                                       // colocará todas as arestas em uma fila, sem repeli-las, para a ordenação
+        {
+            a = (arestas_t*)obter_dado(no2);
+
+            if(get_visitado(aresta_get_adjacente(a)) == 0){   // verifica se a aresta já foi visitada testando a flag "visitado" do  vertice adjacente
+
+                enqueue(a,fila);                         // add na fila para colocar no array, é necessário varrer uma vez para contar o tamanho do array
+                counter++;                               // incrementa contador para o malloc do array.. quantos elementos há na fila (arestas)
+
+                #ifdef DEBUG_K
+                printf("\nAresta numero: %d da fila", counter);
+                printf("\nPeso: %d", aresta_get_peso(a));
+                printf("\nAdjacente: %d \n", vertice_get_id(aresta_get_adjacente(a)));
+                #endif
+            }
+            grau_count++;
+            no2 = obtem_proximo(no2);
+        }
+
+        vertice_set_grau(v,grau_count);                 // seta o numero de arestas em cada vertice
+        vert_count++;
         no = obtem_proximo(no);
     }
 
+#ifdef DEBUG_K
+    printf("\n%ditens na fila\n",counter);
+    printf("%d vertices\n",vert_count);
+#endif
 
-    vertice_set_dist(inicial,0);
-    enqueue(inicial,fila);
+    grafo->n_vertices = vert_count;                          // salva no grafo o seu numero de vertices
 
-    while(!fila_vazia(fila))
-    {
-        u = dequeue(fila);
-        lista = vertice_get_arestas(u);
-        no2 = obter_cabeca(lista);
-        printf("Dequeue v: %d\n", vertice_get_id(u));
+    a_sort = malloc(sizeof(int*)*(counter+1));           // cria o array de ponteiros para as arestas e a mst
+    //mst =  malloc(sizeof(int*)*(counter+1));
 
-        while(no2)
-        {
-            a = (arestas_t*)obter_dado(no2);
-            v = aresta_get_adjacente(a);
-            if (vertice_get_dist(v) == INFINITO)                // se não foi visitado
-            {
-                vertice_set_dist(v,vertice_get_dist(u)+1);      // seta o nivel
-                vertice_set_pai(v,u);
-                enqueue(v,fila);
-                printf("Enqueue v: %d\n", vertice_get_id(v));
-                grau_count++;
-            }
-
-            no2 = obtem_proximo(no2);
-        }
-        printf("\n");
-
-        if(grau <= grau_count)
-            grau = grau_count;
-
-        grau_count = 0;
-    }
-
-    //free(lista);
-    free(fila);
-
-    printf("\nGrau: %d\n\n",grau);
-    tree = cria_arvore(grau,0);
-
-}
-
-
-void dfs(grafo_t *grafo, vertice_t* inicial)
-{
-    if (grafo == NULL || inicial == NULL)
-    {
-        perror("busca_largura: ponteiro invalido.");
+    if(a_sort == NULL ){
+        perror("a_sort/mst malloc");
         exit(EXIT_FAILURE);
     }
 
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v,*u;
-    pilha_t * pilha;
-    lista_enc_t *lista;
-    arestas_t *a;
-    pilha = cria_pilha();
-
-    while (no)
-    {
-        v = (vertice_t*)obter_dado(no);
-        set_visitado(v,FALSE);
-        no = obtem_proximo(no);
+    for(i=0; i<counter; i++){               // criado um array para fazer a ordenação de modo mais eficiente
+        a_sort[i] = dequeue(fila);          // coloca os elementos da fila no array, mesmo sendo necessário mais uma varredura, a função heap é mais eficiente
+        #ifdef DEBUG_K                      // com array de índices, é uma escolha em detrimento de outra
+        printf("\n%d", aresta_get_peso(a_sort[i]));
+        #endif
     }
 
-    push(inicial,pilha);
+    a_sort = heap(a_sort, counter);         // o heap sort ordena o array
 
-    while(!pilha_vazia(pilha))
-    {
-        u = pop(pilha);
-        lista = vertice_get_arestas(u);             // pega a lista de arestas de cada vertice
-        no2 = obter_cabeca(lista);                  // pega a cabeça da lista de arestas
-        printf("Pop u: %d\n", vertice_get_id(u));
-
-        if (get_visitado(u) == FALSE)
-        {
-            set_visitado(u,TRUE);
-
-            while(no2)
-            {
-                v = (vertice_t*)obter_dado(no2);
-                push(v,pilha);
-                no2 = obtem_proximo(no2);
-            }
-        }
-
-        printf("\n");
+#ifdef DEBUG_K
+    printf("\n");
+    for(i=0; i<counter; i++) {
+        printf("\n%d", aresta_get_peso(a_sort[i]));
+        //enqueue(a_sort[i],fila);
     }
+#endif // DEBUG_K
+
+//                                                  Até aqui --------- MAKE SET   E ORDENAÇÃO    ----   até aqui ok!
+//-----------------------------------------------------------------------------------------------------------------------
+    #ifdef DEBUG_K
+    printf("\nAte ordenacao OK!\n");
+    printf("\n%d vertices\n",vert_count);
+    #endif
+
+    i = 0;                                                         // counter (arestas) <  vert_count  (vertices)
+
+    while(i < vert_count){                   // enquanto ainda houver arestas
+
+        a = a_sort[i];                                             // pega a aresta de menor peso
+        u = aresta_get_fonte(a);
+        v = aresta_get_adjacente(a);                               // pega os vertices da aresta
+
+        #ifdef DEBUG_K
+            printf("\n\n\n*****************************************************************************");
+            printf("\n***** Id aresta u -- v: %d -- %d  ----------- sub %d  ******",vertice_get_id(u),vertice_get_id(v),i+1);
+        #endif
+
+
+        s_u = pre_find(spanning_tree,u);            // pre_find() faz a conversão de vertice para sub_arvore que chamará a função find()
+        s_v = pre_find(spanning_tree,v);
+
+        if(s_v != s_u)
+           raiz = v_union(s_u,s_v);
+
+        arvore_set_n_sub(spanning_tree,i+1);  // // seta o numero de sub_arvores a arvore contem.. deve ser igual ao num de vertices do grafo
+        #ifdef DEBUG_K
+        printf("\nLevel raiz: %d ",get_level(raiz));
+        #endif
+
+        i++;
+    }
+
+    spanning_tree = set_raiz(spanning_tree ,raiz);
+    arvore_set_level(spanning_tree, get_level(raiz));
+
     //free(lista);
-    free(pilha);
+    //free(fila);
+    printf("\n\nId raiz   : %d ",sub_arvore_get_id(raiz));
+    printf("\nNivel maximo: %d ",get_level(raiz));
+    printf("\nN subs: %d",arvore_get_n_sub(spanning_tree));
+
+#ifdef DEBUG_K
+printf("\n\nEND_KRUSKAL -----------------------------------------------------------------------\n");
+#endif
+
+
+    return spanning_tree;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub_arvore_t* pre_find(arvore_t* tree, vertice_t* v)
+{
+    if(v == NULL || tree == NULL){
+        perror("pre_find");
+        exit(1);
+    }
+
+#ifdef DEBUG_PRE_FIND
+printf("\n\nPRE_FIND -------------------------------------------------------------------------");
+#endif
+
+    sub_arvore_t* sub;
+    vertice_t* v0;
+    no_t* no = arvore_get_cabeca(tree);
+
+    sub = obter_dado(no);
+    v0 = sub_get_dado(sub);
+
+    while(vertice_get_id(v) != vertice_get_id(v0)){
+        sub = obter_dado(no);
+        v0 = sub_get_dado(sub);
+        no = obtem_proximo(no);
+
+        #ifdef DEBUG_PRE_FIND
+        printf("\nId vertice: %2d /----/ Id sub: %d\n",vertice_get_id(v),sub_arvore_get_id(sub));
+        #endif
+    }
+
+
+    #ifdef DEBUG_PRE_FIND
+        printf("\nId vertice 0: %2d /----/ Id sub: %d\n",vertice_get_id(v0),sub_arvore_get_id(sub));
+    #endif
+
+    sub = find(sub);
+
+    #ifdef DEBUG_PRE_FIND
+        printf("\nReturn %d\n",sub_arvore_get_id(sub));
+    #endif
+
+    return sub;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub_arvore_t* find(sub_arvore_t* v)
+{
+    if(v == NULL){
+        perror("find");
+        exit(1);
+    }
+
+#ifdef DEBUG_FIND
+printf("\n\nFIND --------------------------------------------------------------------");
+#endif
+
+    sub_arvore_t *v0, *pai_v0;
+    int level;
+    v0 = v;
+
+    pai_v0 = arvore_get_pai(v0);
+    //level = set_level(pai_v0,0);
+
+    #ifdef DEBUG_FIND
+    printf("\nLevel: %d  --- sub : %d --- pai : %d ",get_level(v0),sub_arvore_get_id(v0),sub_arvore_get_id(pai_v0));
+    #endif // DEBUG_FIND
+
+    if(v0 == pai_v0)
+        return v0;
+
+    v0 = pai_v0;
+
+    v0 = find(v0);
+
+    return v0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Função v_union
+
+sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0)
+{
+    if(v0 == NULL || u0 == NULL){
+        perror("v_union");
+        exit(1);
+    }
+
+#ifdef DEBUG_UNION
+printf("\n\nUNION ---------------------------------------------------------------------");
+#endif
+
+    sub_arvore_t* paizao;
+    sub_arvore_t *pai_v0, *pai_u0;
+
+    pai_v0 = arvore_get_pai(v0);
+    pai_u0 = arvore_get_pai(u0);
+
+    if(get_level(v0) > get_level(u0)){
+        paizao = v0;
+        set_level(v0,(get_level(v0)+1));
+        add_filho(v0,pai_u0);
+        //arvore_set_pai(pai_u0,v0);
+    }
+
+    else{
+        paizao = u0;
+        set_level(u0, (get_level(u0)+1));
+        add_filho(u0,pai_v0);
+        //arvore_set_pai(pai_v0,u0);
+    }
+
+
+    #ifdef DEBUG_UNION
+        //printf("\nLevel u0: %2d  /----/ Level v0: %d", get_level(u0),get_level(v0));
+        //printf("\nId u0 :   %2d  /----/ Id v0 : %d /----/ Id paizao : %d\n",sub_arvore_get_id(u0),sub_arvore_get_id(v0),sub_arvore_get_id(paizao));
+        printf("\nId u0 : %2d  ----  Level u0:  %2d",sub_arvore_get_id(u0),get_level(u0));
+        printf("\nId v0 : %2d  ----  Level v0:  %2d",sub_arvore_get_id(v0),get_level(v0));
+        printf("\nId pai: %2d  ----  Level pai: %2d\n",sub_arvore_get_id(paizao), get_level(paizao));
+    #endif
+
+    return paizao;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Funções do heap sort
+arestas_t** heapfy(arestas_t **vet, int ini, int fim)
+{
+    if(vet == NULL){
+        perror("heapfy");
+        exit(1);
+    }
+
+    arestas_t* aux = vet[ini];
+    int j = ini*2 + 1;
+
+    while(j < fim)
+    {
+        if(aresta_get_peso(vet[j]) < aresta_get_peso(vet[j+1]))
+            j++;
+
+        if(aresta_get_peso(aux) < aresta_get_peso(vet[j]))
+        {
+            vet[ini] = vet[j];
+            ini = j;
+            j = 2*ini + 1;
+        }
+        else
+            j = fim + 1;
+    }
+    vet[ini] = aux;
+
+    return vet;
+}
+
+
+arestas_t** heap(arestas_t **vet,int tm)
+{
+    if(vet == NULL){
+        perror("heap");
+        exit(1);
+    }
+
+    int i;
+    for(i = (tm-1)/2; i>=0; i--)
+        vet = heapfy(vet,i,tm-1);
+
+    for(i = tm-1; i>-1; i--){
+        vet = swapp(vet,i,0);
+        vet = heapfy(vet,0,i-1);
+    }
+    return vet;
 
 }
 
-//--------------------------------------------------------------------------------------
+arestas_t** swapp(arestas_t** vet, int i, int j)
+{
+    if(vet == NULL){
+        perror("swapp");
+        exit(1);
+    }
+
+    arestas_t* aux = vet[i];
+    vet[i] = vet[j];
+    vet[j] = aux;
+
+    return vet;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 grafo_t *cria_grafo(int id)
 {
@@ -174,20 +398,15 @@ grafo_t *cria_grafo(int id)
     }
 
     p->id = id;
+    p->n_vertices = 0;
     p->vertices = cria_lista_enc();
 
     return p;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertice_t* grafo_adicionar_vertice(grafo_t *grafo, int id)
 {
-    vertice_t *vertice;
-    no_t *no;
-
-#ifdef DEBUG
-    printf("grafo_adicionar_vertice: %d\n", id);
-#endif
-
     if (grafo == NULL)
     {
         fprintf(stderr,"grafo_adicionar_vertice: grafo invalido!");
@@ -200,6 +419,13 @@ vertice_t* grafo_adicionar_vertice(grafo_t *grafo, int id)
         exit(EXIT_FAILURE);
     }
 
+    vertice_t *vertice;
+    no_t *no;
+
+#ifdef DEBUG
+    printf("grafo_adicionar_vertice: %d\n", id);
+#endif
+
     vertice = cria_vertice(id);
     no = cria_no(vertice);
 
@@ -208,6 +434,7 @@ vertice_t* grafo_adicionar_vertice(grafo_t *grafo, int id)
     return vertice;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 vertice_t* procura_vertice(grafo_t *grafo, int id)
 {
     no_t *no_lista;
@@ -244,6 +471,7 @@ vertice_t* procura_vertice(grafo_t *grafo, int id)
     return NULL;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 {
     va_list argumentos;
@@ -276,14 +504,17 @@ void adiciona_adjacentes(grafo_t *grafo, vertice_t *vertice, int n, ...)
 #ifdef DEBUG
         printf("\tvertice: %d\n", vertice_get_id(vertice));
         printf("\tsucessor: %d\n", id_sucessor);
-        printf("\tpeso: %d\n", peso);
+        printf("\tpeso: %d\n\n", peso);
 #endif
 
     }
 
+    vertice_set_grau(vertice, (n/2));
+
     va_end (argumentos);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void exportar_grafo_dot(const char *filename, grafo_t *grafo)
 {
     FILE *file;
@@ -359,7 +590,7 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo)
     fclose(file);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void libera_grafo (grafo_t *grafo)
 {
     no_t *no_vert;
@@ -412,6 +643,288 @@ void libera_grafo (grafo_t *grafo)
     free(grafo);
 }
 
+int grafo_get_tam(grafo_t* g){
+
+     if(g == NULL){
+        perror("grafo_get_tam");
+        exit(EXIT_FAILURE);
+    }
+
+    return g->n_vertices;
+}
 
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Funções não utilizadas
+/*
+fila_t* fila_de_prioridade(fila_t* f)
+{
+    if(f == NULL)
+    {
+        perror("fila_de_prioridade");
+        exit(1);
+    }
+
+    arestas_t *p1;
+    arestas_t *p2;
+    arestas_t *temp;
+    arestas_t *minimo;
+    fila_t *faux = cria_fila();
+
+    p1 = dequeue(f);
+    minimo = p1;                                   // apenas para inicializar com algum dado, no while ele sera atualizado
+
+    while(!fila_vazia(f))                       // while para encontrar o maior
+    {
+        p2 = dequeue(f);
+
+        if(aresta_get_peso(p1) < aresta_get_peso(p2))               // pega o maior da comparação entre os 2 consecutivos
+            temp = p1;
+        else
+            temp = p2;
+
+        if(aresta_get_peso(temp) < aresta_get_peso(minimo))            // compara o maior dos consecutivos com o maior geral
+            minimo = temp;
+
+        #ifdef DEBUG
+            printf("\nPeso atual do topo: %d",aresta_get_peso(minimo));
+        #endif //
+
+        enqueue(p1,faux);                       // coloca na fila auxiliar na mesma ordem
+        p1 = p2;
+    }
+    enqueue(p1,faux);                       // coloca o ultimo na fila
+
+    enqueue(minimo,f);                         // coloca o mais velho na cabeça da fila
+
+    #ifdef DEBUG
+        printf("\n\nPeso do topo: %d",aresta_get_peso(minimo));
+    #endif
+
+    while(!fila_vazia(faux))
+    {
+        p1 = dequeue(faux);
+
+        if(p1 != minimo){
+            enqueue(p1,f);                      // compara os ponteiros, pois o minimo sera igual a algum elemento da fila, terá o mesmo endereço
+            #ifdef DEBUG
+            printf("\nEnqueue fila_de_prioridade: %d",aresta_get_peso(p1));
+            #endif
+        }
+    }
+
+    libera_fila(faux);
+
+    return f;
+}
+
+
+
+void bfs(grafo_t *grafo, vertice_t* inicial)
+{
+     if (grafo == NULL || inicial == NULL)
+    {
+        perror("busca_largura: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v,*u;
+    fila_t *fila;
+    lista_enc_t *lista;
+    arestas_t *a;
+    fila = cria_fila();
+
+
+    while (no)
+    {
+        v = (vertice_t*)obter_dado(no);
+        vertice_set_dist(v,INFINITO);
+        vertice_set_pai_nulo(v);
+        no = obtem_proximo(no);
+    }
+
+
+    vertice_set_dist(inicial,0);
+    enqueue(inicial,fila);
+
+    while(!fila_vazia(fila))
+    {
+        u = dequeue(fila);
+        lista = vertice_get_arestas(u);
+        no2 = obter_cabeca(lista);
+        printf("Dequeue v: %d\n", vertice_get_id(u));
+
+        while(no2)
+        {
+            a = (arestas_t*)obter_dado(no2);
+            v = aresta_get_adjacente(a);
+            if (vertice_get_dist(v) == INFINITO)                // se não foi visitado
+            {
+                vertice_set_dist(v,vertice_get_dist(u)+1);      // seta o nivel
+                vertice_set_pai(v,u);
+                enqueue(v,fila);
+                printf("Enqueue v: %d\n", vertice_get_id(v));
+                grau_count++;
+            }
+
+            no2 = obtem_proximo(no2);
+        }
+        printf("\n");
+
+
+    }
+
+    //free(lista);
+    free(fila);
+
+    printf("\nGrau: %d",grau);
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void dfs(grafo_t *grafo, vertice_t* inicial)
+{
+    if (grafo == NULL || inicial == NULL)
+    {
+        perror("busca_largura: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v,*u;
+    pilha_t * pilha;
+    lista_enc_t *lista;
+    arestas_t *a;
+    pilha = cria_pilha();
+
+    while (no)
+    {
+        v = (vertice_t*)obter_dado(no);
+        vertice_set_visitado(v,FALSE);
+        no = obtem_proximo(no);
+    }
+
+    push(inicial,pilha);
+
+    while(!pilha_vazia(pilha))
+    {
+        u = pop(pilha);
+        lista = vertice_get_arestas(u);             // pega a lista de arestas de cada vertice
+        no2 = obter_cabeca(lista);                  // pega a cabeça da lista de arestas
+        printf("Pop u: %d\n", vertice_get_id(u));
+
+        if (get_visitado(u) == FALSE)
+        {
+            vertice_set_visitado(u,TRUE);
+
+            while(no2)
+            {
+                v = (vertice_t*)obter_dado(no2);
+                push(v,pilha);
+                no2 = obtem_proximo(no2);
+            }
+        }
+
+        printf("\n\n");
+    }
+    //free(lista);
+    free(pilha);
+
+}
+*/
+
+
+/*
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void prim(grafo_t* grafo)
+{
+    if (grafo == NULL)
+    {
+        perror("prim: ponteiro invalido.");
+        exit(EXIT_FAILURE);
+    }
+
+    no_t *no, *no2;
+    no = obter_cabeca(grafo->vertices);
+
+    vertice_t *v;
+   // fila_t *fila, *fila_v;
+    lista_enc_t *lista;
+    arestas_t *a, **a_sort, **mst;
+   // fila = cria_fila();
+   // fila_v = cria_fila();
+
+    int dest, primeiro, menorpeso;
+    int vert_count = 0;
+    int grau = 0;
+    //int grau_count = 0;
+    int i,j;
+    //arvore_t *tree;
+
+    #ifdef DEBUG_P
+    printf("\n\nPRIM *******************************************************************\n");
+    #endif
+
+    while (no)                              // varre a lista de vertices do grafo
+    {
+        v = (vertice_t*)obter_dado(no);     // obtem um vertice, pega a sua lista arestas e marca este como visitado (flag 1)
+       // enqueue(v,fila_v);                  // salva numa fila para passar para funções
+        no2 = obter_cabeca(lista);
+
+        #ifdef DEBUG_K
+            printf("\n\nVertice id: %d\n", vertice_get_id(v));
+        #endif
+        vert_count++;
+        no = obtem_proximo(no);
+    }
+
+    int pai[vert_count];
+
+    for(i=0; i<=vert_count; i++)
+        pai[i] = -1;
+
+    pai[0] = 0;
+
+    while(1){
+
+        primeiro = 1;
+
+        for(i=0; i<=vert_count; i++){
+
+            lista = vertice_get_arestas(v);
+            no = obter_cabeca(lista);
+
+            if(pai[i] != -1){
+
+
+                for(j=0; j<vertice_get_grau(v); j++){
+
+                    a = obter_dado(no);
+
+                    if(pai[])
+
+                        if(primeiro){
+                            menorpeso =
+                    }
+                }
+            }
+        }
+
+        if(primeiro) break;
+
+        pai[dest] = [0];
+
+    }
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
