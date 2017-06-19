@@ -10,6 +10,7 @@
 
 #include "vertice.h"
 #include "../lista_enc/lista_enc.h"
+#include "../arvore/sub_arvore.h"
 
 struct vertices
 {
@@ -20,7 +21,7 @@ struct vertices
     int id_grupo;
     vertice_t* pai;
     int visitado;
-
+    sub_arvore_t* sub;
 };
 
 struct arestas
@@ -292,7 +293,7 @@ void aresta_set_check(arestas_t* a){
 }
 
 void vertice_set_grau(vertice_t* v, int grau)
-{   
+{
     if (v == NULL)
     {
         fprintf(stderr, "vertice_set_grau\n");
@@ -305,7 +306,7 @@ void vertice_set_grau(vertice_t* v, int grau)
 
 int vertice_get_grau(vertice_t* v)
 {
-     if (v == NULL)
+    if (v == NULL)
     {
         fprintf(stderr, "vertice_get_grau\n");
         exit(EXIT_FAILURE);
@@ -313,6 +314,30 @@ int vertice_get_grau(vertice_t* v)
     return v->grau;
 }
 
+
+
+void vertice_set_link(vertice_t* v, void* sub){
+
+    if (v == NULL || sub == NULL)
+    {
+        fprintf(stderr, "vertice_set_link\n");
+        exit(EXIT_FAILURE);
+    }
+
+    v->sub = sub;
+
+}
+
+void* vertice_get_link(vertice_t* v){
+
+    if (v == NULL)
+    {
+        fprintf(stderr, "vertice_get_link\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return v->sub;
+}
 
 
 /*

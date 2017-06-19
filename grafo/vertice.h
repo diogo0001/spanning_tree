@@ -9,6 +9,9 @@
 #define GRAFO_VERTICE_H_
 
 #include "../lista_enc/lista_enc.h"
+//#include "../arvore/sub_arvore.h"
+
+
 
 /* Exporta os tipos de dados do vertice e arestas */
 typedef struct vertices vertice_t;
@@ -87,6 +90,11 @@ void aresta_set_check(arestas_t* a);
 int vertice_get_grau(vertice_t* v);
 
 void vertice_set_grau(vertice_t* v, int grau);
+
+void* vertice_get_link(vertice_t* v);
+
+void vertice_set_link(vertice_t* v, void* sub);
+
 
 
 /* Obtem vertice antecessor do menor caminho.

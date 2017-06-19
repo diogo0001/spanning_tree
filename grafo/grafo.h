@@ -73,7 +73,7 @@ vertice_t** inicia(int* vet_tm, int vert_num, vertice_t** chefe);
 
 sub_arvore_t* find(sub_arvore_t* v);
 
-sub_arvore_t* v_union(sub_arvore_t* v0, sub_arvore_t* u0);
+sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0, vertice_t* u, vertice_t* v);
 
 void prim(grafo_t* grafo);
 

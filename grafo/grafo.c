@@ -1,7 +1,7 @@
 /*
  *  Created on: Jul 5, 2016
  *      Author: Renan Augusto Starke
- *      Modifyed by: Diogo Tavares, José Nicolau Varela -- Fuções adicionais e modificações
+ *      Modifyed by: Diogo Tavares, José Nicolau Varela
  */
 
 #include <stdio.h>
@@ -9,21 +9,22 @@
 #include <stdarg.h>
 #include <limits.h>
 #include "grafo.h"
+#include "../arvore/sub_arvore.h"
 #include "vertice.h"
 #include "../lista_enc/lista_enc.h"
 #include "../lista_enc/no.h"
 #include "../fila/fila.h"
-#include "../arvore/sub_arvore.h"
+
 #include "../pilha/pilha.h"
 
 #define FALSE 0
 #define TRUE 1
 
-#define DEBUG
+//#define DEBUG
 #define DEBUG_K
 //#define DEBUG_PRE_FIND
 
-#define DEBUG_FIND
+//#define DEBUG_FIND
 #define DEBUG_UNION
 
 #define INFINITO INT_MAX
@@ -38,7 +39,7 @@ struct grafos
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na leitura do arquivo, otimiza mto o programa.. elimina o while(no2)
+arvore_t* kruskal(grafo_t *grafo)               
 {
     if (grafo == NULL)
     {
@@ -52,10 +53,10 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
     vertice_t *u,*v;
     fila_t *fila;
     lista_enc_t *lista;
-    arestas_t *a, **a_sort;   
+    arestas_t *a, **a_sort;   //**mst; não utulizada no momento
     fila = cria_fila();
 
-    int counter = 0;
+    int counter_arestas = 0;
     int vert_count = 0;
     int grau_count;
     int i;
@@ -75,8 +76,8 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
         no2 = obter_cabeca(lista);
 
         sub_tree = cria_sub(spanning_tree,vertice_get_id(v),v);       // adiciona sub_arvore à floresta inicial
-        arvore_set_pai(sub_tree,sub_tree);                            // seta como pai de si mesma
-        //set_flag(FALSE);                                              // seta sub_arvore como não adicionada.. ao adicionar recebe flag TRUE
+        arvore_set_boss(sub_tree,sub_tree);                            // seta como pai de si mesma
+        vertice_set_link(v,sub_tree);                                 // aponta o vertice para a sub_arvore para elas ficares mutuamente conectadas
 
         grau_count = 0;
 
@@ -92,10 +93,10 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
             if(get_visitado(aresta_get_adjacente(a)) == 0){   // verifica se a aresta já foi visitada testando a flag "visitado" do  vertice adjacente
 
                 enqueue(a,fila);                         // add na fila para colocar no array, é necessário varrer uma vez para contar o tamanho do array
-                counter++;                               // incrementa contador para o malloc do array.. quantos elementos há na fila (arestas)
+                counter_arestas++;                               // incrementa contador para o malloc do array.. quantos elementos há na fila (arestas)
 
                 #ifdef DEBUG_K
-                printf("\nAresta numero: %d da fila", counter);
+                printf("\nAresta numero: %d da fila", counter_arestas);
                 printf("\nPeso: %d", aresta_get_peso(a));
                 printf("\nAdjacente: %d \n", vertice_get_id(aresta_get_adjacente(a)));
                 #endif
@@ -110,67 +111,78 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
     }
 
 #ifdef DEBUG_K
-    printf("\n%ditens na fila\n",counter);
+    printf("\n%ditens na fila\n",counter_arestas);
     printf("%d vertices\n",vert_count);
 #endif
 
-    grafo->n_vertices = vert_count;                          // salva no grafo o seu numero de vertices
+    grafo->n_vertices = vert_count;                      // salva no grafo o seu numero de vertices
 
-    a_sort = malloc(sizeof(int*)*(counter+1));           // cria o array de ponteiros para as arestas e a mst
-    //mst =  malloc(sizeof(int*)*(counter+1));
+    a_sort = malloc(sizeof(int*)*(counter_arestas+1));           // cria o array de ponteiros para as arestas
+
 
     if(a_sort == NULL ){
         perror("a_sort/mst malloc");
         exit(EXIT_FAILURE);
     }
 
-    for(i=0; i<counter; i++){               // criado um array para fazer a ordenação de modo mais eficiente
+    for(i=0; i<counter_arestas; i++){               // criado um array para fazer a ordenação de modo mais eficiente
         a_sort[i] = dequeue(fila);          // coloca os elementos da fila no array, mesmo sendo necessário mais uma varredura, a função heap é mais eficiente
         #ifdef DEBUG_K                      // com array de índices, é uma escolha em detrimento de outra
         printf("\n%d", aresta_get_peso(a_sort[i]));
         #endif
     }
 
-    a_sort = heap(a_sort, counter);         // o heap sort ordena o array
+    a_sort = heap(a_sort, counter_arestas);         // o heap sort ordena o array
 
 #ifdef DEBUG_K
     printf("\n");
-    for(i=0; i<counter; i++) {
+    for(i=0; i<counter_arestas; i++) {
         printf("\n%d", aresta_get_peso(a_sort[i]));
         //enqueue(a_sort[i],fila);
     }
 #endif // DEBUG_K
 
-//                                                  Até aqui --------- MAKE SET   E ORDENAÇÃO    ----   até aqui ok!
+//                                                  Até aqui --------- MAKE SET   E ORDENAÇÃO    
 //-----------------------------------------------------------------------------------------------------------------------
     #ifdef DEBUG_K
     printf("\nAte ordenacao OK!\n");
     printf("\n%d vertices\n",vert_count);
     #endif
 
-    i = 0;                                                      
+    i = 0;                                            
 
-    while(i < vert_count){                   // varre até o número total de vértices
+    while(i < counter_arestas){                   
 
-        a = a_sort[i];                                             // pega a aresta de menor peso já ordenada
+        a = a_sort[i];                                // pega a aresta de menor peso
         u = aresta_get_fonte(a);
-        v = aresta_get_adjacente(a);                               // pega os vertices da aresta
+        v = aresta_get_adjacente(a);                  // pega os vertices da aresta
 
         #ifdef DEBUG_K
             printf("\n\n\n*****************************************************************************");
-            printf("\n***** Id aresta u -- v: %d -- %d  ----------- sub %d  ******",vertice_get_id(u),vertice_get_id(v),i+1);
+            printf("\n***** Id aresta u -- v: %d -- %d  ----------- sub_counter %d  ******",vertice_get_id(u),vertice_get_id(v),i+1);
         #endif
 
+        s_u = vertice_get_link(u);
+        s_v = vertice_get_link(v);
 
-        s_u = pre_find(spanning_tree,u);            // pre_find() faz a conversão de vertice para sub_arvore que chamará a função find()
-        s_v = pre_find(spanning_tree,v);
+        s_u = find(s_u);
+        s_v = find(s_v);
 
-        if(s_v != s_u)
-           raiz = v_union(s_u,s_v);
 
-        arvore_set_n_sub(spanning_tree,i+1);  // // seta o numero de sub_arvores a arvore contem.. deve ser igual ao num de vertices do grafo
         #ifdef DEBUG_K
-        printf("\nLevel raiz: %d ",get_level(raiz));
+        printf("\nRetorno find():");
+        printf("\ns_u: %2d  ---- boss: %2d ",vertice_get_id(u),sub_arvore_get_id(s_u));
+        printf("\ns_v: %2d  ---- boss: %2d \n",vertice_get_id(v),sub_arvore_get_id(s_v));
+        #endif // DEBUG_FIND
+
+        if(s_v != s_u){
+
+            raiz = v_union(s_u,s_v,u,v);
+            arvore_set_n_sub(spanning_tree,arvore_get_n_sub(spanning_tree)+1);     // seta o numero de sub_arvores a arvore contem.. deve ser igual ao num de vertices do grafo
+        }
+
+        #ifdef DEBUG_K
+        printf("Level raiz: %d ",get_level(raiz));
         #endif
 
         i++;
@@ -178,12 +190,14 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
 
     spanning_tree = set_raiz(spanning_tree ,raiz);
     arvore_set_level(spanning_tree, get_level(raiz));
+    arvore_set_n_sub(spanning_tree,arvore_get_n_sub(spanning_tree)+1); 
 
     //free(lista);
     //free(fila);
-    printf("\n\nId raiz   : %d ",sub_arvore_get_id(raiz));
+    printf("\n\nDados da funcao kruskal:");
+    printf("\nId raiz   : %d ",sub_arvore_get_id(raiz));
     printf("\nNivel maximo: %d ",get_level(raiz));
-    printf("\nN subs: %d",arvore_get_n_sub(spanning_tree));
+    printf("\nN subs: %d\n",arvore_get_n_sub(spanning_tree));
 
 #ifdef DEBUG_K
 printf("\n\nEND_KRUSKAL -----------------------------------------------------------------------\n");
@@ -193,54 +207,10 @@ printf("\n\nEND_KRUSKAL --------------------------------------------------------
     return spanning_tree;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Função que faz a adaptação da chamada por vertice para o retorno em sub_arvore
-
-sub_arvore_t* pre_find(arvore_t* tree, vertice_t* v)
-{
-    if(v == NULL || tree == NULL){
-        perror("pre_find");
-        exit(1);
-    }
-
-#ifdef DEBUG_PRE_FIND
-printf("\n\nPRE_FIND -------------------------------------------------------------------------");
-#endif
-
-    sub_arvore_t* sub;
-    vertice_t* v0;
-    no_t* no = arvore_get_cabeca(tree);
-
-    sub = obter_dado(no);
-    v0 = sub_get_dado(sub);
-
-    while(vertice_get_id(v) != vertice_get_id(v0)){  // procura a sub_arvore correspondente ao vértice
-        sub = obter_dado(no);
-        v0 = sub_get_dado(sub);
-        no = obtem_proximo(no);
-
-        #ifdef DEBUG_PRE_FIND
-        printf("\nId vertice: %2d /----/ Id sub: %d\n",vertice_get_id(v),sub_arvore_get_id(sub));
-        #endif
-    }
-
-
-    #ifdef DEBUG_PRE_FIND
-        printf("\nId vertice 0: %2d /----/ Id sub: %d\n",vertice_get_id(v0),sub_arvore_get_id(sub));
-    #endif
-
-    sub = find(sub);            // com a adaptação feita, agora é possível chamar a função find()
-
-    #ifdef DEBUG_PRE_FIND
-        printf("\nReturn %d\n",sub_arvore_get_id(sub));
-    #endif
-
-    return sub;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Função que encontra o pai de uma árvore da floresta
+//  FIND OK!
 
 sub_arvore_t* find(sub_arvore_t* v)
 {
@@ -253,32 +223,34 @@ sub_arvore_t* find(sub_arvore_t* v)
 printf("\n\nFIND --------------------------------------------------------------------");
 #endif
 
-    sub_arvore_t *v0, *pai_v0;
-    int level;
+    sub_arvore_t *v0, *boss_v0;
+    //int level;
     v0 = v;
 
-    pai_v0 = arvore_get_pai(v0);        // cada sub_arvore inicial tem ela mesma como pai
-    //level = set_level(pai_v0,0);
+    boss_v0 = arvore_get_boss(v0);
+    //inc_level(boss_v0);
 
     #ifdef DEBUG_FIND
-    printf("\nLevel: %d  --- sub : %d --- pai : %d ",get_level(v0),sub_arvore_get_id(v0),sub_arvore_get_id(pai_v0));
+    printf("\nLevel: %2d  ---- sub: %2d  ---- boss: %2d ",get_level(v0),sub_arvore_get_id(v0),sub_arvore_get_id(boss_v0));
     #endif // DEBUG_FIND
 
-    if(v0 == pai_v0)            // se v0 == pai_v0 encontrou o pai do grupo, pois o primeiro elemento tem ele mesmo como pai
+    if(v0 == boss_v0)
         return v0;
 
-    v0 = pai_v0;
+    v0 = boss_v0;
 
-    v0 = find(v0);              // enquanto v0 não for igual ao seu pai chama recursivamente
+    v0 = find(v0);
 
-    return v0;                  // retorna o pai do grupo
+    return v0;
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Função que une duas asvores distindas da floresta
 
-sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Função v_union:  Problemas ao conectar pais e filhos, pois o algoritmo gera uma arvore que não condiz com as conexões do grafo, é uma questão do algoritmo.
+//                  Está sendo tentado estabelecer as conexões verdadeiras entre os vertices(sub_arvores)
+
+sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0, vertice_t* u, vertice_t* v)
 {
     if(v0 == NULL || u0 == NULL){
         perror("v_union");
@@ -289,37 +261,70 @@ sub_arvore_t* v_union(sub_arvore_t* u0, sub_arvore_t* v0)
 printf("\n\nUNION ---------------------------------------------------------------------");
 #endif
 
-    sub_arvore_t* paizao;
-    sub_arvore_t *pai_v0, *pai_u0;
+    sub_arvore_t* boss;
+    sub_arvore_t *link_v0, *link_u0;
 
-    pai_v0 = arvore_get_pai(v0);
-    pai_u0 = arvore_get_pai(u0);
+    link_u0 = vertice_get_link(u);          // faz o link do ponteiro da sub_arvore cque corresponde ao vértice
+    link_v0 = vertice_get_link(v);
 
-    if(get_level(v0) > get_level(u0)){   // verifica os niveis de cada arvore, o nivel mais profundo prevalece, terá seu pai como pai 
-        paizao = v0;
-        set_level(v0,(get_level(v0)+1));
-        add_filho(v0,pai_u0);
+    if(get_level(v0) > get_level(u0)){
+        boss = v0;
+        //set_level(v0,(get_level(v0)+1));
+        //add_filho(v0,u0);
+        inc_level(v0);
+        arvore_set_boss(u0,boss);
+
+            add_filho(link_v0,link_u0);
     }
 
     else{
-        paizao = u0;
-        set_level(u0, (get_level(u0)+1));
-        add_filho(u0,pai_v0);
+        boss = u0;
+        //set_level(u0, (get_level(u0)+1));
+        //add_filho(u0,v0);
+        inc_level(u0);
+        arvore_set_boss(v0,boss);
+        //add_filho(link_v0,link_u0);
+        
+            add_filho(link_u0,link_v0);
+
     }
 
-
     #ifdef DEBUG_UNION
-        printf("\nId u0 : %2d  ----  Level u0:  %2d",sub_arvore_get_id(u0),get_level(u0));
-        printf("\nId v0 : %2d  ----  Level v0:  %2d",sub_arvore_get_id(v0),get_level(v0));
-        printf("\nId pai: %2d  ----  Level pai: %2d\n",sub_arvore_get_id(paizao), get_level(paizao));
+        printf("\nId u0  : %2d  ----  Level u0  : %2d  ----  Filhos u0  : %2d",sub_arvore_get_id(u0),get_level(u0),pai_get_n_filhos(u0));
+        printf("\nId v0  : %2d  ----  Level v0  : %2d  ----  Filhos v0  : %2d",sub_arvore_get_id(v0),get_level(v0),pai_get_n_filhos(v0));
+        printf("\nId boss: %2d  ----  Level boss: %2d  ----  Filhos boss: %2d\n",sub_arvore_get_id(boss), get_level(boss),pai_get_n_filhos(boss));
     #endif
 
-    return paizao;
+    return boss;
 }
 
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Funções do heap sort
+// Funções do heap sort com array
+
+arestas_t** heap(arestas_t **vet,int tm)
+{
+    if(vet == NULL){
+        perror("heap");
+        exit(1);
+    }
+
+    int i;
+    for(i = (tm-1)/2; i>=0; i--)
+        vet = heapfy(vet,i,tm-1);
+
+    for(i = tm-1; i>-1; i--){
+        vet = swapp(vet,i,0);
+        vet = heapfy(vet,0,i-1);
+    }
+    return vet;
+
+}
+
+
+
 arestas_t** heapfy(arestas_t **vet, int ini, int fim)
 {
     if(vet == NULL){
@@ -349,25 +354,6 @@ arestas_t** heapfy(arestas_t **vet, int ini, int fim)
     return vet;
 }
 
-
-arestas_t** heap(arestas_t **vet,int tm)
-{
-    if(vet == NULL){
-        perror("heap");
-        exit(1);
-    }
-
-    int i;
-    for(i = (tm-1)/2; i>=0; i--)
-        vet = heapfy(vet,i,tm-1);
-
-    for(i = tm-1; i>-1; i--){
-        vet = swapp(vet,i,0);
-        vet = heapfy(vet,0,i-1);
-    }
-    return vet;
-
-}
 
 arestas_t** swapp(arestas_t** vet, int i, int j)
 {
@@ -642,7 +628,7 @@ void libera_grafo (grafo_t *grafo)
     free(grafo->vertices);
     free(grafo);
 }
-
+/*
 int grafo_get_tam(grafo_t* g){
 
      if(g == NULL){
@@ -652,8 +638,54 @@ int grafo_get_tam(grafo_t* g){
 
     return g->n_vertices;
 }
+*/
+/*
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub_arvore_t* pre_find(arvore_t* tree, vertice_t* v)
+{
+    if(v == NULL || tree == NULL){
+        perror("pre_find");
+        exit(1);
+    }
+
+#ifdef DEBUG_PRE_FIND
+printf("\n\nPRE_FIND -------------------------------------------------------------------------");
+#endif
+
+    sub_arvore_t* sub;
+    vertice_t* v0;
+    no_t* no = arvore_get_cabeca(tree);
+
+    sub = obter_dado(no);
+  //  v0 =  sub_get_dado(sub);
+
+    while(vertice_get_id(v) != vertice_get_id(v0)){
+        sub = obter_dado(no);
+        v0 = sub_get_dado(sub);
+        no = obtem_proximo(no);
+
+        #ifdef DEBUG_PRE_FIND
+        printf("\nId vertice: %2d /----/ Id sub: %d\n",vertice_get_id(v),sub_arvore_get_id(sub));
+        #endif
+    }
 
 
+    #ifdef DEBUG_PRE_FIND
+        printf("\nId vertice 0: %2d /----/ Id sub: %d\n",vertice_get_id(v0),sub_arvore_get_id(sub));
+    #endif
+
+    sub = find(sub);
+
+    #ifdef DEBUG_PRE_FIND
+        printf("\nReturn %d\n",sub_arvore_get_id(sub));
+    #endif
+
+    return sub;
+}
+
+
+*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
