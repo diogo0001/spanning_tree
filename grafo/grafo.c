@@ -23,7 +23,6 @@
 //#define DEBUG
 #define DEBUG_K
 //#define DEBUG_PRE_FIND
-
 //#define DEBUG_FIND
 #define DEBUG_UNION
 
@@ -37,8 +36,7 @@ struct grafos
 };
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 arvore_t* kruskal(grafo_t *grafo)               
 {
     if (grafo == NULL)
@@ -84,8 +82,7 @@ arvore_t* kruskal(grafo_t *grafo)
         #ifdef DEBUG_K
             printf("\n\nVertice id: %d\n", vertice_get_id(v));
         #endif
-
-
+        
         while(no2)                                       // colocará todas as arestas em uma fila, sem repeli-las, para a ordenação
         {
             a = (arestas_t*)obter_dado(no2);
@@ -114,11 +111,9 @@ arvore_t* kruskal(grafo_t *grafo)
     printf("\n%ditens na fila\n",counter_arestas);
     printf("%d vertices\n",vert_count);
 #endif
-
+    
     grafo->n_vertices = vert_count;                      // salva no grafo o seu numero de vertices
-
     a_sort = malloc(sizeof(int*)*(counter_arestas+1));           // cria o array de ponteiros para as arestas
-
 
     if(a_sort == NULL ){
         perror("a_sort/mst malloc");
@@ -168,7 +163,6 @@ arvore_t* kruskal(grafo_t *grafo)
         s_u = find(s_u);
         s_v = find(s_v);
 
-
         #ifdef DEBUG_K
         printf("\nRetorno find():");
         printf("\ns_u: %2d  ---- boss: %2d ",vertice_get_id(u),sub_arvore_get_id(s_u));
@@ -202,12 +196,8 @@ arvore_t* kruskal(grafo_t *grafo)
 #ifdef DEBUG_K
 printf("\n\nEND_KRUSKAL -----------------------------------------------------------------------\n");
 #endif
-
-
     return spanning_tree;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  FIND OK!
@@ -244,8 +234,6 @@ printf("\n\nFIND ---------------------------------------------------------------
     return v0;
 }
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Função v_union:  Problemas ao conectar pais e filhos, pois o algoritmo gera uma arvore que não condiz com as conexões do grafo, é uma questão do algoritmo.
 //                  Está sendo tentado estabelecer as conexões verdadeiras entre os vertices(sub_arvores)
@@ -276,7 +264,6 @@ printf("\n\nUNION --------------------------------------------------------------
 
             add_filho(link_v0,link_u0);
     }
-
     else{
         boss = u0;
         //set_level(u0, (get_level(u0)+1));
@@ -286,7 +273,6 @@ printf("\n\nUNION --------------------------------------------------------------
         //add_filho(link_v0,link_u0);
         
             add_filho(link_u0,link_v0);
-
     }
 
     #ifdef DEBUG_UNION
@@ -297,10 +283,6 @@ printf("\n\nUNION --------------------------------------------------------------
 
     return boss;
 }
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Funções do heap sort com array
 
@@ -322,8 +304,6 @@ arestas_t** heap(arestas_t **vet,int tm)
     return vet;
 
 }
-
-
 
 arestas_t** heapfy(arestas_t **vet, int ini, int fim)
 {
@@ -353,7 +333,6 @@ arestas_t** heapfy(arestas_t **vet, int ini, int fim)
 
     return vet;
 }
-
 
 arestas_t** swapp(arestas_t** vet, int i, int j)
 {
