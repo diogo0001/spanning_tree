@@ -4,16 +4,20 @@
 #include <limits.h>
 #include "sub_arvore.h"
 #include "../lista_enc/lista_enc.h"
-#include "../lista_enc/no.h"
-#include "../grafo/vertice.h"
+//#include "../lista_enc/no.h"
+//#include "../grafo/vertice.h"
+#include "../pilha/pilha.h"
+//#include "../fila/fila.h"
 
 
 struct sub_arvore{
     sub_arvore_t *pai;
     lista_enc_t *filhos;          // Optou-se por uma lista encadeada de filhos pois cada vertice do grafo pode ter qtde diferente de arestas,
-    vertice_t* dado;                   // ponteiro para o dado recebido
+    vertice_t* dado;              // ponteiro para o dado recebido
     int id;
     int level;
+    int pai_n_filhos;             // para  o pai
+    sub_arvore_t *boss;           // chefe do grupo  usado para verificar se há ciclos
 };
 
 struct arvore{
@@ -42,7 +46,7 @@ arvore_t *cria_arvore(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-sub_arvore_t* cria_sub(arvore_t* tree, int id, vertice_t* dado){
+sub_arvore_t* cria_sub(arvore_t* tree, int id, void* dado){ //era vertice_t* dado
 
     if(tree == NULL){
         perror("cria_sub");
@@ -61,6 +65,8 @@ sub_arvore_t* cria_sub(arvore_t* tree, int id, vertice_t* dado){
     sub->id = id;
     sub->dado = dado;
     sub->level = 0;
+    sub->pai_n_filhos = 0;
+    sub->boss = NULL;
 
     no_t *no = cria_no(sub);
     add_cauda(tree->lista_sub,no);    // add a sub_arvore criada à lista de sub_arvores da árvore principal
@@ -79,6 +85,7 @@ void add_filho(sub_arvore_t* pai, sub_arvore_t* filho)
     filho->pai = pai;
     no_t *no = cria_no(filho);        // add o filho à lista de filhos do pai
     add_cauda(pai->filhos,no);
+    pai->pai_n_filhos++;
 
 }
 
@@ -98,14 +105,26 @@ no_t* arvore_get_cabeca(arvore_t* tree)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void arvore_set_pai(sub_arvore_t* filho, sub_arvore_t *pai)
+void arvore_set_boss(sub_arvore_t* filho, sub_arvore_t *boss)
 {
-    if (pai == NULL || filho == NULL){
+    if (boss == NULL || filho == NULL){
         fprintf(stderr, "arvore_set_pai: vertice invalido\n");
         exit(EXIT_FAILURE);
     }
 
-    filho->pai = pai;
+    filho->boss = boss;
+    //boss->level++;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+sub_arvore_t* arvore_get_boss(sub_arvore_t* filho)
+{
+    if (filho == NULL){
+        fprintf(stderr, "arvore_set_pai: vertice invalido\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return filho->boss;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +169,12 @@ no_t* sub_get_cabeca(sub_arvore_t *pai){
         exit(EXIT_FAILURE);
     }
 
-    return  obter_cabeca(pai->filhos);
+    if(!lista_vazia(pai->filhos))
+        return  obter_cabeca(pai->filhos);
+
+    else
+        printf("\nNao ha filhos!\n");
+    return NULL;
 }
 
 
@@ -297,6 +321,12 @@ int arvore_get_level(arvore_t* tree){
     return tree->level;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int pai_get_n_filhos(sub_arvore_t* pai){
+
+    return pai->pai_n_filhos;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void teste_mst(arvore_t* tree){
@@ -306,49 +336,115 @@ void teste_mst(arvore_t* tree){
         exit(EXIT_FAILURE);
     }
 
-    int i, level;
+    int i;
     vertice_t* v;
-    sub_arvore_t *raiz, *sub, *filhos;
+    sub_arvore_t *raiz, *sub, *filho;
 
-    level = arvore_get_level(tree);
+    fila_t *fila, *fila2, *fila3;
+    fila = cria_fila();
+    fila2 = cria_fila();
+    fila3 = cria_fila();
 
     no_t *no, *no_filhos;
     no = arvore_get_cabeca(tree);
     sub = obter_dado(no);
     v = sub_get_dado(sub);
 
-    raiz = get_raiz(tree);
+    raiz = tree->raiz;
 
     printf("\n****************** Teste da arvore gerada ********************\n");
-    printf("\nNumero de sub_arvores: %d",arvore_get_n_sub(tree));
-    printf("\nNivel: %d",level);
-    printf("\nId raiz: %d",sub_arvore_get_id(raiz));
+    printf("\nNumero de sub_arvores: %d",tree->n_sub);
+    printf("\nNivel: %d",tree->level);
+    printf("\nId raiz: %d",raiz->id);
     printf("\n----------------------------------------------------------------------\n\n");
+
+
 
     while(no){
         sub = obter_dado(no);
         v = sub_get_dado(sub);
+        printf("\nId vertice: %2d ---- Id sub: %2d\n",vertice_get_id(v),sub->id);
+        mostra_filhos(sub);
+        printf("--------------------------------------\n");
         no = obtem_proximo(no);
-
-        printf("\nId vertice: %2d /----/ Id sub: %d\n",vertice_get_id(v),sub_arvore_get_id(sub));
-
     }
 
     printf("\n----------------------------------------------------------------------\n\n");
 
-/*                                                      // implementar as buscas para testar a arvore
-    no = sub_get_cabeca(raiz);
+                                                    // implementar as buscas para testar a arvore
 
-    for(i=0; i<=level; i++){
+/*
+    fila = mostra_filhos(raiz);
 
-        while(no){
+    i = 0;
 
-            filhos = obter_dado(no);
-            no = obtem_proximo(no);
-            printf("\n");
+    while(i < tree->n_sub){
+
+        filho = dequeue(fila);
+        i++;
+        enqueue(filho,fila2);
+        fila3 = mostra_filhos(filho);
+
+        if(fila_vazia(fila)){
+
+            filho = dequeue(fila2);
+            i++;
+            enqueue(filho,fila2);
+            fila = mostra_filhos(filho);
         }
 
     }
 */
+}
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+fila_t* mostra_filhos(sub_arvore_t* pai){
+
+    if(pai == NULL){
+        perror("mostra_filhos");
+        exit(1);
+    }
+
+    fila_t* fila = cria_fila();
+    no_t* no = sub_get_cabeca(pai);
+
+    sub_arvore_t* filho;
+
+    while(no){
+
+        filho = obter_dado(no);
+        enqueue(filho,fila);
+        printf("\nId da filho: %d", filho->id);
+        no = obtem_proximo(no);
+    }
+    printf("\n");
+
+    return fila;
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub_arvore_t* busca_pre_ordem(sub_arvore_t* sub){
+
+    if(sub == NULL)
+        return sub;
+/*
+    sub_arvore_t* v;
+    no_t *no;
+    pilha_t * pilha = cria_pilha();
+    push(sub);
+
+/*
+
+
+    while(!pilha_vazia(pilha)){
+
+        v = pop(pilha);
+
+        printf("\nId da sub_arvore: %d", sub->id);
+
+    }
+*/
 }
