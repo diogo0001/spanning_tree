@@ -297,7 +297,7 @@ int arvore_get_level(arvore_t* tree){
     return tree->level;
 }
 
-
+/*
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void teste_mst(arvore_t* tree){
 
@@ -333,22 +333,6 @@ void teste_mst(arvore_t* tree){
         printf("\nId vertice: %2d /----/ Id sub: %d\n",vertice_get_id(v),sub_arvore_get_id(sub));
 
     }
-
     printf("\n----------------------------------------------------------------------\n\n");
-
-/*                                                      // implementar as buscas para testar a arvore
-    no = sub_get_cabeca(raiz);
-
-    for(i=0; i<=level; i++){
-
-        while(no){
-
-            filhos = obter_dado(no);
-            no = obtem_proximo(no);
-            printf("\n");
-        }
-
-    }
-*/
-
 }
+*/
