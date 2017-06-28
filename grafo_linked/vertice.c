@@ -235,6 +235,32 @@ void vertice_set_pai(vertice_t *vertice, vertice_t *pai)
 
 
 
+
+
+
+void vertice_set_dist(vertice_t *vertice, int dist)
+{
+
+    if (vertice == NULL)
+    {
+        fprintf(stderr, "vertice_set_dist: vertice invalido\n");
+        exit(EXIT_FAILURE);
+    }
+
+    vertice->dist =  dist;
+}
+
+int vertice_get_dist(vertice_t *vertice)
+{
+    if (vertice == NULL)
+    {
+        fprintf(stderr, "vertice_get_dist: vertice invalido\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return vertice->dist;
+}
+
 void vertice_set_pai_nulo(vertice_t* vertice)
 {
     if (vertice == NULL)
@@ -312,33 +338,6 @@ int vertice_get_grau(vertice_t* v)
     }
     return v->grau;
 }
-
-
-
-/*
-void vertice_set_dist(vertice_t *vertice, int dist)
-{
-
-    if (vertice == NULL)
-    {
-        fprintf(stderr, "vertice_set_dist: vertice invalido\n");
-        exit(EXIT_FAILURE);
-    }
-
-    vertice->dist =  dist;
-}
-
-int vertice_get_dist(vertice_t *vertice)
-{
-    if (vertice == NULL)
-    {
-        fprintf(stderr, "vertice_get_dist: vertice invalido\n");
-        exit(EXIT_FAILURE);
-    }
-
-    return vertice->dist;
-}
-*/
 
 
 //

@@ -1,10 +1,4 @@
-//
-//  main.c
-//  LowCostMST
-//
-//  Created by Jose Nicolau Varela on 19/06/17.
-//  Copyright (c) 2017 JOSÉ NICOLAU VARELA. All rights reserved.
-//
+//<<<<<<< atualizacao-2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -107,4 +101,4 @@ int main(int argc, const char * argv[]) {
     
     
 }
-
+//>>>>>>> master

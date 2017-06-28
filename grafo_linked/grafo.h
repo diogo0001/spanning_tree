@@ -71,14 +71,10 @@ arestas_t** heapfy(arestas_t **vet, int ini, int fim);
 
 vertice_t** inicia(int* vet_tm, int vert_num, vertice_t** chefe);
 
-sub_arvore_t* find(sub_arvore_t* v);
+vertice_t* find(vertice_t* v, vertice_t** chefe);
 
-sub_arvore_t* v_union(sub_arvore_t* v0, sub_arvore_t* u0);
+vertice_t** v_union(vertice_t* v0, vertice_t* u0, vertice_t** chefe, int* vet_tm);
 
 void prim(grafo_t* grafo);
-
-sub_arvore_t* pre_find(arvore_t* tree, vertice_t *v);
-
-int grafo_get_tam(grafo_t* g);
 
 #endif /* GRAFO_GRAFO_H_ */
