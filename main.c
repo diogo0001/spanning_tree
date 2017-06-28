@@ -1,138 +1,110 @@
-/**
- ============================================================================
- Name        : grafos.c
- Author      :
- Version     :
- Copyright   : Renan Augusto Starke, todos os direitos reservados
- Description : grafos com lista encadeadas, Ansi-style
-             : estruturas disponiveis:
-             : pilha e fila
- ============================================================================
- */
+//
+//  main.c
+//  LowCostMST
+//
+//  Created by Jose Nicolau Varela on 19/06/17.
+//  Copyright (c) 2017 JOSÉ NICOLAU VARELA. All rights reserved.
+//
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "In_Out_file.h"
+#include "lista_enc.h"
+#include "no.h"
+#include"fila.h"
+#include "pilha.h"
+#include "grafo.h"
+#include "sub_arvore.h"
+#include <time.h>
+#include <limits.h>
 
-#include "pilha/pilha.h"
-#include "fila/fila.h"
-#include "grafo/grafo.h"
+int main(int argc, const char * argv[]) {
+   
+    
+ /////////////////////////////////////////////////////////////////////////
+    grafo_t *g;
+    g = cria_grafo(1);
+    vertice_t* v = NULL;
+    vertice_t* u = NULL;
+    
+     sub_arvore_t* sub;
+     arvore_t* MST;
+    
+    
+    struc_arquivo_t* dado_arquivo;       //para guardar dados do arquivo
 
-int main(void)
-{
-
-    grafo_t *grafo;
-    vertice_t* vertice;
-
-    fila_t *fila;
-    int id;
-
-    grafo = cria_grafo(0);
-    fila = cria_fila();
-
-    //Adiciona todos os vertices no grafo
-    vertice = grafo_adicionar_vertice(grafo, 1);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo, 2);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo, 3);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo, 4);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo, 5);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo, 6);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,7);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,8);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,9);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,10);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,11);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,12);
-    enqueue(vertice, fila);
-
-    vertice = grafo_adicionar_vertice(grafo,13);
-    enqueue(vertice, fila);
-
-
-
-    // constrói grafo
-    while (!fila_vazia(fila))
-    {
-        vertice = dequeue(fila);
-        id = vertice_get_id(vertice);
-
-        switch(id)
-        {
-        case 1:
-            adiciona_adjacentes(grafo, vertice, 6, 6, 14, 2, 7, 3, 9);
-            break;
-        case 2:
-            adiciona_adjacentes(grafo, vertice, 6, 1, 7, 3, 10, 4, 15);
-            break;
-        case 3:
-            adiciona_adjacentes(grafo, vertice, 8, 6, 2, 1, 9, 2, 10, 4, 11);
-            break;
-        case 4:
-            adiciona_adjacentes(grafo, vertice, 6, 5, 6, 3, 11, 2, 15);
-            break;
-        case 5:
-            adiciona_adjacentes(grafo, vertice, 4, 6, 9, 4, 6);
-            break;
-        case 6:
-            adiciona_adjacentes(grafo, vertice, 6, 1, 14, 3, 2, 5, 9);
-            break;
-        case 7:
-            adiciona_adjacentes(grafo, vertice, 2, 8, 9);
-            break;
-        case 8:
-            adiciona_adjacentes(grafo, vertice, 4, 7, 9, 9, 4);
-            break;
-        case 9:
-            adiciona_adjacentes(grafo, vertice, 2, 8, 4);
-            break;
-        case 10:
-            adiciona_adjacentes(grafo, vertice, 4, 11, 1, 12, 8);
-            break;
-        case 11:
-            adiciona_adjacentes(grafo, vertice, 4, 10, 1, 12, 4);
-            break;
-        case 12:
-            adiciona_adjacentes(grafo, vertice, 4, 11, 4, 10, 8);
-            break;
-        default:
-            break;
+    
+    int pai_id = 0 ;
+    int id = 0 ;
+    
+    
+    int peso = 0;
+    int tamanho = 0 ;
+    
+   
+    
+    lista_enc_t *lista_arquivo = NULL;  // cria uma lista para retorno dos dados lidos
+    
+    lista_arquivo =  ler_arquivo("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/centroFpolis.csv",& tamanho);
+    
+    
+    no_t* no_arquivo = obter_cabeca(lista_arquivo);
+    
+    
+   
+    while (no_arquivo!= NULL) {
+        dado_arquivo = obter_dado(no_arquivo);
+        
+        calcula_peso(dado_arquivo);
+        
+        pai_id = obtem_pai_id_dado_arquivo(dado_arquivo);
+        id = obtem_id_dado_arquivo(dado_arquivo);
+        peso = obtem_peso_dado_arquivo(dado_arquivo);
+        
+        
+      //  printf("pai = %d  ", pai_id);
+      //  printf("id = %d ", id);
+      //  printf("peso = %d \n ",peso);
+        
+        if(procura_vertice(g, pai_id)== NULL){
+            
+            v = grafo_adicionar_vertice(g, pai_id);}
+        else{
+            v = procura_vertice(g, pai_id);
         }
+        
+        if(procura_vertice(g, id)== NULL) {
+            
+            u = grafo_adicionar_vertice(g, id);}
+        else{
+           u = procura_vertice(g, id);
+        }
+        
+        adiciona_adjacentes(g, v, 2,id,peso);
+        adiciona_adjacentes(g, u, 2,pai_id,peso);
+        
+        
+     
+        
+        
+        no_arquivo = obtem_proximo(no_arquivo);
+        
+        
     }
-
-
-    //printf("%d %d %d\n",vertice_get_id(vertice),ver)
-
-    bfs(grafo,procura_vertice(grafo,1));
-    dfs(grafo,procura_vertice(grafo,1));
-
-    exportar_grafo_dot("grafo.dot", grafo);
-
-    libera_fila(fila);
-    libera_grafo(grafo);
-
-    return EXIT_SUCCESS;
+    
+    MST = kruskal(g);        // kruskal retorna a arvore criada
+    
+    
+    
+    teste_mst(MST);
+    
+    exportar_arvore_cvs("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/testeSaida2.csv", MST,lista_arquivo);
+    
+   //  exportar_grafo_dot("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/teste1.dot", g);
+    
+  //   exportar_grafo_csv("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/testeSaida.csv", g);
+    
+    
+    
 }
-
-
 
