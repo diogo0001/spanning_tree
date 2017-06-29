@@ -9,7 +9,6 @@
 #define GRAFO_GRAFO_H_
 
 #include "vertice.h"
-#include "../pilha/pilha.h"
 #include "../arvore/sub_arvore.h"
 #include "../fila/fila.h"
 
@@ -39,9 +38,6 @@ void exportar_grafo_dot(const char *filename, grafo_t *grafo);
 /* Libera memoria utilizada pelo grafo */
 void libera_grafo (grafo_t *grafo);
 
-/* Menor camingo entre todos os nos:
- * retorna um pilha do caminho entre fonte e destino  */
-pilha_t* Dijkstra(grafo_t *grafo, vertice_t *fonte, vertice_t *destino);
 
 /* Procura um vertice com menor a menor distancia
  * Ver: struct vertices */
