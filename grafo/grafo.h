@@ -78,4 +78,6 @@ sub_arvore_t* pre_find(arvore_t* tree, vertice_t *v);
 
 int grafo_get_tam(grafo_t* g);
 
+void libera_tudo (grafo_t *grafo, arvore_t* tree);
+
 #endif /* GRAFO_GRAFO_H_ */
