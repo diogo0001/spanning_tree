@@ -3,6 +3,7 @@
  *
  *  Created on: Jul 5, 2016
  *      Author: Renan Augusto Starke
+ *      Modifyed by: Diogo Tavares
  */
 
 #ifndef GRAFO_GRAFO_H_
