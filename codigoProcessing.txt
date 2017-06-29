@@ -1,0 +1,305 @@
+ int value = 0;
+ int x,x1,x2,y1,y2;
+ int y ;
+ int i=1;
+ int v =0;
+ int marcado = 0;
+ int tamanho =0;
+ int a;
+ int b;
+ int aux = 20;
+ int id;
+ Table table;
+ Table tableIn;
+ Table tableOut;
+ int vert1= 0;
+ int vert2 = 0;
+ int flag;
+
+
+PImage img;
+PImage img0;
+ 
+
+void setup() {
+  size(972,600);
+  background(50,50,50);
+  papel_fundo();
+  
+  img = loadImage("centro_Fpolis.png");
+  
+ 
+ 
+   table = new Table();
+  table.addColumn("id");
+  table.addColumn("coordX");
+  table.addColumn("coordY");
+
+  tableOut = new Table();
+  tableOut.addColumn("id_pai");
+  tableOut.addColumn("coordX");
+  tableOut.addColumn("coordY");
+  tableOut.addColumn("id");
+  tableOut.addColumn("coordX1");
+  tableOut.addColumn("coordY1");
+  
+  
+  //////////////////////////////////////////////
+ 
+ 
+  
+
+  
+}
+
+void draw() {
+ textSize(14);
+ fill(200,200,200);
+     rect(50,50,50,50);
+       vert2 = v;
+      aux = aux +20;
+    if (v > tamanho){
+      v = 0;}
+      textSize(20);
+      fill(123,34,13);
+       text (v, 65,80);
+       
+
+ 
+ 
+}
+void mouseClicked() {
+x = mouseX;
+y= mouseY;
+
+ TableRow newRow = table.addRow();
+newRow.setInt("id", table.getRowCount() - 1  );
+newRow.setInt("coordX", x);
+newRow.setInt("coordY", y);
+ 
+ fill(200,100,50);
+ textSize(18);
+ text (newRow.getInt("id"),x+10,y);
+// fill(0,255,0);
+// textSize(14);
+// text (newRow.getInt("coordX"),x+20,y+10);
+// text (newRow.getInt("coordY"),x+30,y+20);
+cria_vertice(x,y);
+// newRow.setInt(x,y);
+ tamanho = table.getRowCount();
+}
+void cria_vertice(int x,int y){
+  
+  fill(50,150,225);
+
+  ellipse (x, y, 10, 10);
+  
+ //table.getInt(aux,"id");
+
+ 
+ }
+  
+void add_aresta (int vert1,int vert2 ){
+  i = 0;
+  
+ TableRow rowOut = tableOut.addRow();
+  stroke (50,150,50);
+  strokeWeight(6); 
+  int countMax = table.getRowCount();
+  for (TableRow row : table.rows() ) {
+          id =  row.getInt("id"); 
+          println(id);
+          println("vert1 "+vert1);
+          println("vert1 "+vert2);
+          
+          if (id == vert1){
+          x1 = table.getInt(id , "coordX");
+          y1 = table.getInt(id , "coordY");
+           rowOut.setInt("id_pai", id +1 );}}
+          
+       for( i=0 ; i< countMax; i++){ 
+         if (i == vert2){
+          x2 = table.getInt(i , "coordX");
+          y2 = table.getInt(i , "coordY"); 
+          rowOut.setInt("id", i +1 );}}
+       
+      
+        
+         rowOut.setInt("coordX", x1);
+         rowOut.setInt("coordY", y1);
+        
+         rowOut.setInt("coordX1", x2);
+         rowOut.setInt("coordY1", y2);
+         
+           fill(0,255,0);
+ textSize(9);
+ text (x1,x1+20,y1+10);
+ text (y1,x1+30,y1+20);
+        
+      line(x1,y1,x2,y2);
+ 
+          
+} 
+          
+      
+void keyPressed(){
+  
+  if (key == 'i' || key == 'I'){
+    
+    image (img,0,0);}
+  
+if (key >= 48 && key <= 57){
+    if (flag == 0){
+    vert1 = (key - 48);}
+     if (flag >= 1){
+    vert1 = (key - 48)+(vert1*10);}
+    
+    flag ++;
+
+   
+     aux = aux +20;
+   
+    
+    }
+    
+     if (key == 'r' || key == 'R') {
+     loadFile ();
+     }
+    if (key == 'v' || key == 'V') {
+      fill(200,200,200);
+     rect(50,50,50,50);
+       vert2 = v;
+      aux = aux +20;
+    if (v > tamanho){
+      v = 0;}
+      textSize(20);
+      fill(123,34,13);
+       text (v, 65,80);
+       
+    }
+  // ------------------------------------------------------------------  
+     if (key == CODED) {
+    if (keyCode == UP) {
+      vert2 =  v++;
+    } else if (keyCode == DOWN) {
+      if (v>0){
+       vert2 = v--;}
+    } 
+     fill(200,200,200);
+     rect(50,50,50,50);
+     textSize(20);
+     fill(123,34,13);
+     text (v, 65,80);
+  } 
+ 
+
+  
+  if (key == 'a' || key == 'A') {
+    flag = 0;
+  add_aresta (vert1,vert2);}
+    
+    if (key == 's' || key == 'S') {
+
+     // saveTable(tableOut, "/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/centroFpolis.csv");
+       saveTable(tableOut, "teste_entrada.csv"); 
+       println("Opening Process_4");
+      // launch("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/lowCostMST2.xcodeproj");
+    } 
+    
+  if (key == 'e' || key == 'E') {  
+    
+  add_aresta ( );
+  }
+    if (key == 'c' || key == 'C') {
+     background(50,50,50);
+       papel_fundo();
+      
+       table.clearRows();
+       tableOut.clearRows();
+  //   image (img,0,0);
+ }
+  
+ 
+ 
+ }
+void papel_fundo(){
+  background(0);
+  fill(200,200,200);
+  textSize( 20);
+  text( "MINIMUM SPANNING TREE", 20,30);
+   textSize( 14);
+   
+   
+  text (" I = Im. mapa " ,400, 20); 
+  text ("UP _ DOWN = Escolher vert.  " ,400, 40); 
+  text (" A = cria aresta " ,610, 20);
+  text (" S = salva .csv " ,610, 40);
+  text (" C = limpa tela " ,780, 20);
+  text (" R = Arvore MSpanTree " ,780, 40);
+for(a = 50; a < width; a = a + 10){
+  stroke (100,100,100);
+  line (a,50,a,height);}
+  for(a = 50; a < width; a = a + 10){
+  stroke (100,100,100);
+  line (0,a,width,a);}
+}
+
+
+void loadFile (){
+//tableIn = loadTable("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/testeSaida2.csv", "header");
+tableIn = loadTable("testeSaida2.csv", "header");
+  println(tableIn.getRowCount() + " total rows in table"); 
+
+  for (TableRow rowIn : tableIn.rows()) {
+    
+     int    id_pai =  rowIn.getInt("id_pai"); 
+     int    id =      rowIn.getInt("id"); 
+     int    x1 =      rowIn.getInt("coordX");
+     int    y1 =      rowIn.getInt("coordY");
+     int    x2 =      rowIn.getInt( "coordX1");
+     int    y2 =      rowIn.getInt( "coordY1");  
+     strokeWeight(6); 
+          fill(255,0,0);
+           ellipse (x1, y1, 10 ,10);
+           stroke(225,0,0);
+           line(x1,y1,x2,y2);
+           ellipse (x2, y2, 10 ,10);
+    
+  }
+  }
+  
+void add_aresta ( ){
+  i = 0;
+ 
+  stroke (50,150,50);
+  int countMax = table.getRowCount();
+  for (TableRow row : table.rows() ) {
+      int  id =  row.getInt("id"); 
+      int x1 = table.getInt(id , "coordX");
+      int y1 = table.getInt(id , "coordY");
+     
+      for( i= id  ; i< countMax; i++){ 
+     
+      int x2 = table.getInt( i, "coordX");
+      int y2 = table.getInt( i, "coordY");
+      
+      if (x1 != x2 && y1 != y2 ){
+         TableRow rowOut = tableOut.addRow();
+         rowOut.setInt("id_pai", id +1  );
+         rowOut.setInt("coordX", x1);
+         rowOut.setInt("coordY", y1);
+         rowOut.setInt("id", i+1  );
+         rowOut.setInt("coordX1", x2);
+         rowOut.setInt("coordY1", y2);
+        
+      line(x1,y1,x2,y2);}
+    } 
+          
+          } 
+          
+     }  
+            
+ 
+    
+   
+     
