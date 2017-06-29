@@ -11,9 +11,9 @@
 
 #include <stdio.h>
 
-#include "grafo/grafo.h"
-#include "lista_enc/lista_enc.h"
-#include "lista_enc/no.h"
+#include "grafo.h"
+#include "lista_enc.h"
+#include "no.h"
 
 typedef struct struc_arquivo struc_arquivo_t;
 
