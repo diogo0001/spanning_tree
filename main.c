@@ -88,9 +88,7 @@ int main(int argc, const char * argv[]) {
     
     MST = kruskal(g);        // kruskal retorna a arvore criada
     
-    
-    
-    teste_mst(MST);
+  
     
     exportar_arvore_cvs("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/testeSaida2.csv", MST,lista_arquivo);
     
