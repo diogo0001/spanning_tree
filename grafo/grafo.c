@@ -643,3 +643,110 @@ int grafo_get_tam(grafo_t* g){
 
     return g->n_vertices;
 }
+
+void libera_tudo (grafo_t *grafo, arvore_t* tree)
+{
+    no_t *no_vert;
+    no_t *no_arest;
+    no_t *no_liberado;
+    vertice_t *vertice;
+    arestas_t *aresta;
+    lista_enc_t *lista_arestas;
+
+
+    no_t *no_sub;
+    no_t *no_filhos;
+    no_t *no_liberado_sub;
+    sub_arvore_t* sub;
+  
+    lista_enc_t *lista_filhos;
+    lista_enc_t *sub_arvores;
+
+
+    #ifdef DEBUG_FREE
+    int counter_alloc = 0;
+    printf("\n\nLibera tudo ***********");
+    #endif
+
+
+
+    if (grafo == NULL || tree == NULL)
+    {
+        fprintf(stderr, "libera_tudo\n");
+        exit(EXIT_FAILURE);
+    }
+
+    no_sub = arvore_get_cabeca(tree);
+
+    //varre todos os vertices
+    no_vert = obter_cabeca(grafo->vertices);
+
+    while (no_vert)
+    {
+        vertice = obter_dado(no_vert);
+        
+
+        //libera todas as arestas
+        lista_arestas = vertice_get_arestas(vertice);
+        no_arest = obter_cabeca(lista_arestas);
+
+        
+
+        while (no_arest)
+        {
+            aresta = obter_dado(no_arest);
+
+            //libera aresta
+            free(aresta);
+
+            //libera no da lsita
+            no_liberado = no_arest;
+            no_arest = obtem_proximo(no_arest);
+            free(no_liberado);
+        }
+
+        //libera lista de arestas e vertice
+        free(lista_arestas);
+        free(vertice);
+
+
+        sub = obter_dado(no_sub);
+        no_filhos = sub_get_cabeca(sub);
+        
+        while (no_filhos)
+        {
+            no_liberado_sub = no_filhos;
+
+            no_filhos = obtem_proximo(no_filhos);
+            free(no_liberado_sub);
+
+
+            #ifdef DEBUG_FREE
+            counter_alloc++;
+            printf("\nno_filhos %d alloc",counter_alloc);
+            #endif
+
+        }
+
+        free(lista_filhos);
+        no_liberado_sub = no_sub;
+        no_sub = obtem_proximo(no_sub);
+        free(no_liberado_sub);
+
+        #ifdef DEBUG_FREE
+        counter_alloc +=2;
+        printf("\nlista e sub %d alloc",counter_alloc);
+        #endif
+
+        //libera no da lista
+        no_liberado = no_vert;
+        no_vert = obtem_proximo(no_vert);
+        free(no_liberado);
+    }
+
+    //libera grafo e vertice
+    free(grafo->vertices);
+    free(grafo);
+
+    libera_arv(tree);
+}
