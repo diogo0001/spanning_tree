@@ -1,7 +1,7 @@
 /*
  *  Created on: Jul 5, 2016
  *      Author: Renan Augusto Starke
- *      Modifyed by: Diogo Tavares, José Nicolau Varela
+ *      Modifyed by: Diogo Tavares
  */
 
 #include <stdio.h>
