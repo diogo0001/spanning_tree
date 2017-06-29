@@ -303,6 +303,18 @@ int arvore_get_level(arvore_t* tree){
     return tree->level;
 }
 
+void libera_arv(arvore_t* tree)
+{
+     if (tree == NULL)
+    {
+        fprintf(stderr, "libera_arvore: arvore invalida\n");
+        exit(EXIT_FAILURE);
+    }
+
+    free(tree->lista_sub);
+    free(tree);
+}
+
 /*
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void teste_mst(arvore_t* tree){
