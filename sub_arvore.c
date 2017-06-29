@@ -373,28 +373,6 @@ void teste_mst(arvore_t* tree){
 
                                                     // implementar as buscas para testar a arvore
 
-/*
-    fila = mostra_filhos(raiz);
-
-    i = 0;
-
-    while(i < tree->n_sub){
-
-        filho = dequeue(fila);
-        i++;
-        enqueue(filho,fila2);
-        fila3 = mostra_filhos(filho);
-
-        if(fila_vazia(fila)){
-
-            filho = dequeue(fila2);
-            i++;
-            enqueue(filho,fila2);
-            fila = mostra_filhos(filho);
-        }
-
-    }
-*/
 }
 
 
@@ -423,6 +401,17 @@ fila_t* mostra_filhos(sub_arvore_t* pai){
     return fila;
 }
 
+void libera_arv(arvore_t* tree)
+{
+     if (tree == NULL)
+    {
+        fprintf(stderr, "libera_arvore: arvore invalida\n");
+        exit(EXIT_FAILURE);
+    }
+
+    free(tree->lista_sub);
+    free(tree);
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
