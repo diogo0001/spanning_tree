@@ -14,7 +14,6 @@
 #include "../lista_enc/no.h"
 #include "../fila/fila.h"
 #include "../arvore/sub_arvore.h"
-#include "../pilha/pilha.h"
 
 #define FALSE 0
 #define TRUE 1
