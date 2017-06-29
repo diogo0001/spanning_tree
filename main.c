@@ -37,9 +37,7 @@ inicio = GetTickCount();   ///Obtem tempo inicial
      sub_arvore_t* sub;
      arvore_t* MST;
 
-
     struc_arquivo_t* dado_arquivo;       //para guardar dados do arquivo
-
 
     int pai_id = 0 ;
     int id = 0 ;
@@ -47,8 +45,6 @@ inicio = GetTickCount();   ///Obtem tempo inicial
 
     int peso = 0;
     int tamanho = 0 ;
-
-
 
     lista_enc_t *lista_arquivo = NULL;  // cria uma lista para retorno dos dados lidos
 
@@ -58,8 +54,6 @@ inicio = GetTickCount();   ///Obtem tempo inicial
 
 
     no_t* no_arquivo = obter_cabeca(lista_arquivo);
-
-
 
     while (no_arquivo!= NULL) {
         dado_arquivo = obter_dado(no_arquivo);
@@ -93,9 +87,6 @@ inicio = GetTickCount();   ///Obtem tempo inicial
         adiciona_adjacentes(g, u, 2,pai_id,peso);
 
 
-
-
-
         no_arquivo = obtem_proximo(no_arquivo);
 
 inicio = GetTickCount();
@@ -104,21 +95,14 @@ inicio = GetTickCount();
     MST = kruskal(g);        // kruskal retorna a arvore criada
 
 
-
- //   teste_mst(MST);
-
-  //   exportar_arvore_cvs("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/MinSpannTree/lowCostMST/lowCostMST2/lowCostMST2/testeSaida2.csv", MST,lista_arquivo);
-
     exportar_arvore_cvs("MSTprocessing/testeSaida2.csv", MST,lista_arquivo);
-
-   //  exportar_grafo_dot("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/teste1.dot", g);
-
-  //   exportar_grafo_csv("/Users/alvarogubert/Documents/Engenharia 2017-1/programacao II/ProgII projeto final/testeSaida.csv", g);
 
 finaliza = GetTickCount();
 tmili = finaliza - inicio;
 printf (" tempo aproximado  de execução em C = %f",tmili);
 
+  libera_tudo (g, MST);
+    
 return 0;
 }
 
