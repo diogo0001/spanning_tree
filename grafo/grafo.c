@@ -35,9 +35,7 @@ struct grafos
     lista_enc_t *vertices;
 };
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na leitura do arquivo, otimiza mto o programa.. elimina o while(no2)
 {
     if (grafo == NULL)
@@ -83,7 +81,6 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
         #ifdef DEBUG_K
             printf("\n\nVertice id: %d\n", vertice_get_id(v));
         #endif
-
 
         while(no2)                                       // colocará todas as arestas em uma fila, sem repeli-las, para a ordenação
         {
@@ -141,7 +138,7 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
     }
 #endif // DEBUG_K
 
-//                                                  Até aqui --------- MAKE SET   E ORDENAÇÃO    ----   até aqui ok!
+//                                                  Até aqui --------- MAKE SET   E ORDENAÇÃO   
 //-----------------------------------------------------------------------------------------------------------------------
     #ifdef DEBUG_K
     printf("\nAte ordenacao OK!\n");
@@ -189,7 +186,6 @@ arvore_t* kruskal(grafo_t *grafo)               // passar fila criada já na lei
 printf("\n\nEND_KRUSKAL -----------------------------------------------------------------------\n");
 #endif
 
-
     return spanning_tree;
 }
 
@@ -236,8 +232,7 @@ printf("\n\nPRE_FIND -----------------------------------------------------------
     return sub;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 sub_arvore_t* find(sub_arvore_t* v)
 {
     if(v == NULL){
@@ -269,7 +264,6 @@ printf("\n\nFIND ---------------------------------------------------------------
 
     return v0;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Função v_union
@@ -305,7 +299,6 @@ printf("\n\nUNION --------------------------------------------------------------
         //arvore_set_pai(pai_v0,u0);
     }
 
-
     #ifdef DEBUG_UNION
         //printf("\nLevel u0: %2d  /----/ Level v0: %d", get_level(u0),get_level(v0));
         //printf("\nId u0 :   %2d  /----/ Id v0 : %d /----/ Id paizao : %d\n",sub_arvore_get_id(u0),sub_arvore_get_id(v0),sub_arvore_get_id(paizao));
@@ -316,7 +309,6 @@ printf("\n\nUNION --------------------------------------------------------------
 
     return paizao;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Funções do heap sort
@@ -652,279 +644,3 @@ int grafo_get_tam(grafo_t* g){
 
     return g->n_vertices;
 }
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Funções não utilizadas
-/*
-fila_t* fila_de_prioridade(fila_t* f)
-{
-    if(f == NULL)
-    {
-        perror("fila_de_prioridade");
-        exit(1);
-    }
-
-    arestas_t *p1;
-    arestas_t *p2;
-    arestas_t *temp;
-    arestas_t *minimo;
-    fila_t *faux = cria_fila();
-
-    p1 = dequeue(f);
-    minimo = p1;                                   // apenas para inicializar com algum dado, no while ele sera atualizado
-
-    while(!fila_vazia(f))                       // while para encontrar o maior
-    {
-        p2 = dequeue(f);
-
-        if(aresta_get_peso(p1) < aresta_get_peso(p2))               // pega o maior da comparação entre os 2 consecutivos
-            temp = p1;
-        else
-            temp = p2;
-
-        if(aresta_get_peso(temp) < aresta_get_peso(minimo))            // compara o maior dos consecutivos com o maior geral
-            minimo = temp;
-
-        #ifdef DEBUG
-            printf("\nPeso atual do topo: %d",aresta_get_peso(minimo));
-        #endif //
-
-        enqueue(p1,faux);                       // coloca na fila auxiliar na mesma ordem
-        p1 = p2;
-    }
-    enqueue(p1,faux);                       // coloca o ultimo na fila
-
-    enqueue(minimo,f);                         // coloca o mais velho na cabeça da fila
-
-    #ifdef DEBUG
-        printf("\n\nPeso do topo: %d",aresta_get_peso(minimo));
-    #endif
-
-    while(!fila_vazia(faux))
-    {
-        p1 = dequeue(faux);
-
-        if(p1 != minimo){
-            enqueue(p1,f);                      // compara os ponteiros, pois o minimo sera igual a algum elemento da fila, terá o mesmo endereço
-            #ifdef DEBUG
-            printf("\nEnqueue fila_de_prioridade: %d",aresta_get_peso(p1));
-            #endif
-        }
-    }
-
-    libera_fila(faux);
-
-    return f;
-}
-
-
-
-void bfs(grafo_t *grafo, vertice_t* inicial)
-{
-     if (grafo == NULL || inicial == NULL)
-    {
-        perror("busca_largura: ponteiro invalido.");
-        exit(EXIT_FAILURE);
-    }
-
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v,*u;
-    fila_t *fila;
-    lista_enc_t *lista;
-    arestas_t *a;
-    fila = cria_fila();
-
-
-    while (no)
-    {
-        v = (vertice_t*)obter_dado(no);
-        vertice_set_dist(v,INFINITO);
-        vertice_set_pai_nulo(v);
-        no = obtem_proximo(no);
-    }
-
-
-    vertice_set_dist(inicial,0);
-    enqueue(inicial,fila);
-
-    while(!fila_vazia(fila))
-    {
-        u = dequeue(fila);
-        lista = vertice_get_arestas(u);
-        no2 = obter_cabeca(lista);
-        printf("Dequeue v: %d\n", vertice_get_id(u));
-
-        while(no2)
-        {
-            a = (arestas_t*)obter_dado(no2);
-            v = aresta_get_adjacente(a);
-            if (vertice_get_dist(v) == INFINITO)                // se não foi visitado
-            {
-                vertice_set_dist(v,vertice_get_dist(u)+1);      // seta o nivel
-                vertice_set_pai(v,u);
-                enqueue(v,fila);
-                printf("Enqueue v: %d\n", vertice_get_id(v));
-                grau_count++;
-            }
-
-            no2 = obtem_proximo(no2);
-        }
-        printf("\n");
-
-
-    }
-
-    //free(lista);
-    free(fila);
-
-    printf("\nGrau: %d",grau);
-
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void dfs(grafo_t *grafo, vertice_t* inicial)
-{
-    if (grafo == NULL || inicial == NULL)
-    {
-        perror("busca_largura: ponteiro invalido.");
-        exit(EXIT_FAILURE);
-    }
-
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v,*u;
-    pilha_t * pilha;
-    lista_enc_t *lista;
-    arestas_t *a;
-    pilha = cria_pilha();
-
-    while (no)
-    {
-        v = (vertice_t*)obter_dado(no);
-        vertice_set_visitado(v,FALSE);
-        no = obtem_proximo(no);
-    }
-
-    push(inicial,pilha);
-
-    while(!pilha_vazia(pilha))
-    {
-        u = pop(pilha);
-        lista = vertice_get_arestas(u);             // pega a lista de arestas de cada vertice
-        no2 = obter_cabeca(lista);                  // pega a cabeça da lista de arestas
-        printf("Pop u: %d\n", vertice_get_id(u));
-
-        if (get_visitado(u) == FALSE)
-        {
-            vertice_set_visitado(u,TRUE);
-
-            while(no2)
-            {
-                v = (vertice_t*)obter_dado(no2);
-                push(v,pilha);
-                no2 = obtem_proximo(no2);
-            }
-        }
-
-        printf("\n\n");
-    }
-    //free(lista);
-    free(pilha);
-
-}
-*/
-
-
-/*
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void prim(grafo_t* grafo)
-{
-    if (grafo == NULL)
-    {
-        perror("prim: ponteiro invalido.");
-        exit(EXIT_FAILURE);
-    }
-
-    no_t *no, *no2;
-    no = obter_cabeca(grafo->vertices);
-
-    vertice_t *v;
-   // fila_t *fila, *fila_v;
-    lista_enc_t *lista;
-    arestas_t *a, **a_sort, **mst;
-   // fila = cria_fila();
-   // fila_v = cria_fila();
-
-    int dest, primeiro, menorpeso;
-    int vert_count = 0;
-    int grau = 0;
-    //int grau_count = 0;
-    int i,j;
-    //arvore_t *tree;
-
-    #ifdef DEBUG_P
-    printf("\n\nPRIM *******************************************************************\n");
-    #endif
-
-    while (no)                              // varre a lista de vertices do grafo
-    {
-        v = (vertice_t*)obter_dado(no);     // obtem um vertice, pega a sua lista arestas e marca este como visitado (flag 1)
-       // enqueue(v,fila_v);                  // salva numa fila para passar para funções
-        no2 = obter_cabeca(lista);
-
-        #ifdef DEBUG_K
-            printf("\n\nVertice id: %d\n", vertice_get_id(v));
-        #endif
-        vert_count++;
-        no = obtem_proximo(no);
-    }
-
-    int pai[vert_count];
-
-    for(i=0; i<=vert_count; i++)
-        pai[i] = -1;
-
-    pai[0] = 0;
-
-    while(1){
-
-        primeiro = 1;
-
-        for(i=0; i<=vert_count; i++){
-
-            lista = vertice_get_arestas(v);
-            no = obter_cabeca(lista);
-
-            if(pai[i] != -1){
-
-
-                for(j=0; j<vertice_get_grau(v); j++){
-
-                    a = obter_dado(no);
-
-                    if(pai[])
-
-                        if(primeiro){
-                            menorpeso =
-                    }
-                }
-            }
-        }
-
-        if(primeiro) break;
-
-        pai[dest] = [0];
-
-    }
-
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-*/
