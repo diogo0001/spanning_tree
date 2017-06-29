@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "In_Out_file.h"
-#include "lista_enc/lista_enc.h"
-#include "lista_enc/no.h"
-#include "fila/fila.h"
-#include "grafo/grafo.h"
-#include "arvore/sub_arvore.h"
+#include "lista_enc.h"
+#include "no.h"
+#include "fila.h"
+#include "grafo.h"
+#include "sub_arvore.h"
 #include <time.h>
 #include <limits.h>
 #include <windows.h>
