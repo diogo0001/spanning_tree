@@ -10,10 +10,10 @@
 #define __MinSpanTree__In_Out_file__
 
 #include <stdio.h>
-#include "lista_enc.h" 
-#include "no.h"
-#include "grafo.h"
 
+#include "/grafo/grafo.h"
+#include "/lista_enc/lista_enc.h"
+#include "/lista_enc/no.h"
 
 typedef struct struc_arquivo struc_arquivo_t;
 
