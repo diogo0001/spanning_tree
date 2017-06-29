@@ -55,4 +55,6 @@ int arvore_set_level(arvore_t* tree, int level);
 
 void teste_mst(arvore_t* tree);
 
+void libera_arv(arvore_t* tree);
+
 #endif // SUB_ARVORE_H_INCLUDED
