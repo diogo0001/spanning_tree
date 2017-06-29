@@ -327,7 +327,7 @@ int pai_get_n_filhos(sub_arvore_t* pai){
     return pai->pai_n_filhos;
 }
 
-
+/*
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void teste_mst(arvore_t* tree){
 
@@ -340,15 +340,9 @@ void teste_mst(arvore_t* tree){
     vertice_t* v;
     sub_arvore_t *raiz, *sub, *filho;
 
-    fila_t *fila, *fila2, *fila3;
-  //  fila = cria_fila();
- //   fila2 = cria_fila();
-  //  fila3 = cria_fila();
-
     no_t *no, *no_filhos;
     no = arvore_get_cabeca(tree);
- //   sub = obter_dado(no);
- //   v = sub_get_dado(sub);
+
 
     raiz = tree->raiz;
 
@@ -370,81 +364,6 @@ void teste_mst(arvore_t* tree){
     }
 
     printf("\n----------------------------------------------------------------------\n\n");
-
-                                                    // implementar as buscas para testar a arvore
-
-/*
-    fila = mostra_filhos(raiz);
-
-    i = 0;
-
-    while(i < tree->n_sub){
-
-        filho = dequeue(fila);
-        i++;
-        enqueue(filho,fila2);
-        fila3 = mostra_filhos(filho);
-
-        if(fila_vazia(fila)){
-
-            filho = dequeue(fila2);
-            i++;
-            enqueue(filho,fila2);
-            fila = mostra_filhos(filho);
-        }
-
-    }
-*/
+                                             
 }
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-fila_t* mostra_filhos(sub_arvore_t* pai){
-
-    if(pai == NULL){
-        perror("mostra_filhos");
-        exit(1);
-    }
-
-    fila_t* fila = cria_fila();
-    no_t* no = sub_get_cabeca(pai);
-
-    sub_arvore_t* filho;
-
-    while(no){
-
-        filho = obter_dado(no);
-        enqueue(filho,fila);
-        printf("\nId da filho: %d", filho->id);
-        no = obtem_proximo(no);
-    }
-    printf("\n");
-
-    return fila;
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//sub_arvore_t* busca_pre_ordem(sub_arvore_t* sub){
-
-//    if(sub == NULL)
-  //      return sub;
-/*
-    sub_arvore_t* v;
-    no_t *no;
-    pilha_t * pilha = cria_pilha();
-    push(sub);
-
-
-
-
-    while(!pilha_vazia(pilha)){
-
-        v = pop(pilha);
-
-        printf("\nId da sub_arvore: %d", sub->id);
-
-    }
 */
-//}
