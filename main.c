@@ -101,7 +101,8 @@ finaliza = GetTickCount();
 tmili = finaliza - inicio;
 printf (" tempo aproximado  de execução em C = %f",tmili);
 
-  libera_tudo (g, MST);
+  //libera_tudo (g, MST);
+    
     
 return 0;
 }
