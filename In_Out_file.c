@@ -10,9 +10,9 @@
 #include "math.h"
 #include "In_Out_file.h"
 
-#include "lista_enc/lista_enc.h"
-#include "lista_enc/no.h"
-#include "arvore/sub_arvore.h"
+#include "lista_enc.h"
+#include "no.h"
+#include "sub_arvore.h"
 
 struct struc_arquivo {
     int tamanho;
