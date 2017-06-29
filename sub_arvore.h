@@ -61,4 +61,6 @@ sub_arvore_t* busca_pre_ordem(sub_arvore_t* sub);
 
 fila_t* mostra_filhos(sub_arvore_t* pai);
 
+void libera_arv(arvore_t* tree);
+
 #endif // SUB_ARVORE_H_INCLUDED
