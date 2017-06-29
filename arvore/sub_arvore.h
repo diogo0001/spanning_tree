@@ -1,3 +1,9 @@
+/*
+ *  Created on: May 2017
+ *      Author: Diogo Tavares
+ */
+
+
 #ifndef SUB_ARVORE_H_INCLUDED
 #define SUB_ARVORE_H_INCLUDED
 
