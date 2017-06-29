@@ -7,12 +7,12 @@ Procedimento para instalação:
 
 Crie uma pasta "lowCostMST2".
 
-Baixe os arquivos .c e arquivos .h e para dentro da pasta criada "lowCostMST2".
-
-Baixe o arquivo CodigoProcessing.txt .
+Clique em download para baixar os arquivos renomeie a pasta para "lowCostMST2".
 
 Na IDE do processing crie um novo skecth e cole o codigo que esta no arquivo CodigoProcessing.txt, salve dentro de "lowCostMST2"
-com o nome "MSTprocessing"
+com o nome "MSTprocessing".
+
+Copie o arquivo .png para dentro da pasta do processing (figura do mapa)
 
 Os arquivos de entrada e saida de dados serão automaticamente criados na execução dos programas.
 Poderá ocorrer erro se o caminho dos arquivos, não estiverem corretos. Ajuste para sua plataforma.
@@ -21,7 +21,11 @@ Monte o projeto em C em uma IDE apropriada.
 
 Execução do Projeto para gerar Uma Minimum Spanning Tree, a partir de grafos:
 
-1- Execute o programa no processing
+
+
+1- Execute o programa no processing para fazer os testes.
+
+Procedimento:
 
 2- Clique na tela a posiçao desejada para os vertices.
 
@@ -47,4 +51,8 @@ Execução do Projeto para gerar Uma Minimum Spanning Tree, a partir de grafos:
     Volte para o processing e tecle r para carregar o MST.
     Tecle " c "para limpar a tela, se desejar.
     
+    Para inserir uma figura de fundo de tela digite "i ".
+    Voce poderá criar um grafo sobre o mapa e xecutar testes reais.
+  
+    Tempo de excução em C é apresentada no terminal do C.
    
