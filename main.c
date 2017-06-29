@@ -9,12 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "In_Out_file.h"
-#include "lista_enc.h"
-#include "no.h"
-#include"fila.h"
-#include "pilha.h"
-#include "grafo.h"
-#include "sub_arvore.h"
+#include "lista_enc/lista_enc.h"
+#include "lista_enc/no.h"
+#include "fila/fila.h"
+#include "grafo/grafo.h"
+#include "arvore/sub_arvore.h"
 #include <time.h>
 #include <limits.h>
 #include <windows.h>
@@ -118,7 +117,7 @@ inicio = GetTickCount();
 
 finaliza = GetTickCount();
 tmili = finaliza - inicio;
-printf (" tempo aproximado  de execução em C = %f",tmili);
+printf (" tempo aproximado  de execuÃ§Ã£o em C = %f",tmili);
 
 return 0;
 }
