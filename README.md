@@ -56,8 +56,8 @@ Procedimento:
   
   
   #Testes
-    
-    Para verificar se o algoritmo está funcionando corretamente, foi utilizado o Processing para gerar o grafo e o arquivo que será lido pelo programa em C, e este criará um novo arquivo que será, por sua vez, lido no processing e sobreposto ao grafo original. Como o processing gera os pontos por coordenadas, é possível aferir os valores e as distâncias das arestas. Pode-se, a partir de um grafo conhecido, e também sua MST, conferir se o algoritmo gerou a árvore correta de forma também visual além dos valores. Conforme os testes feitos, todos apresentaram sucesso.
+   
+   Para verificar se o algoritmo está funcionando corretamente, foi utilizado o Processing para gerar o grafo e o arquivo que será lido pelo programa em C, e este criará um novo arquivo que será, por sua vez, lido no processing e sobreposto ao grafo original. Como o processing gera os pontos por coordenadas, é possível aferir os valores e as distâncias das arestas. Pode-se, a partir de um grafo conhecido, e também sua MST, conferir se o algoritmo gerou a árvore correta de forma também visual além dos valores. Conforme os testes feitos, todos apresentaram sucesso.
     
    #Benchmarks
   
