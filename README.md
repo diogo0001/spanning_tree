@@ -64,7 +64,7 @@ Procedimento:
   O algoritmo utilizado (Kruskal), é mais eficiente para grafos esparsos, mas funciona perfeitamente para grafos densos. No processing foi criada a função de inserir arestas onde desejado (cria-se um grafo esparso), e também a opção de conectar todos os vertices a todos com um único clique (E) (grafo denso). 
   A verificação do tempo de execução não apresentou muita diferença para os dois casos, porém foram feitos testes com números relativamente pequenos de vértices. Fazendo com grafos densos de 30 vértices (pior caso), os desempenhos obtidos na execução do programa (não consideranto overhead da parte do processing, apenas a execução do código) em duas máquinas diferentes foram:
     
-    Máquina:
+    Máquina 1:
     Processador Intel(R) Core(TM)2Duo CPU T6400 @ 2.00 GHz
     Ram: 3,00 GB
     - Output file is bin\Debug\MST.exe with size 79.42 KB
@@ -72,9 +72,19 @@ Procedimento:
     Para grafo denso (todos os vértices):
     - 1,04 s para grafo denso;
     
-    Para um grafo esparso (Até 3 arestas média):
+    Para um grafo esparso (Até 3 arestas em média):
     -0,280 s;
     
+    Máquina 2:
+    Processador Intel(R) Core(TM)2 CPU T4300 @ 1.80 GHz
+    Ram: 1,93 GB
+    - Output file is bin\Debug\MST.exe with size 77,8 KB
+    
+    Para grafo denso (todos os vértices):
+    - 3,23 s para grafo denso;
+    
+    Para um grafo esparso (Até 3 arestas em média):
+    -2,050 s;
     
 
    
