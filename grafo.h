@@ -1,9 +1,4 @@
-/*
- * grafo.h
- *
- *  Created on: Jul 5, 2016
- *      Author: Renan Augusto Starke
- */
+
 
 #ifndef GRAFO_GRAFO_H_
 #define GRAFO_GRAFO_H_
