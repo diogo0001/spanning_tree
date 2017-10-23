@@ -15,22 +15,18 @@
  int vert1= 0;
  int vert2 = 0;
  int flag;
-
-
+ 
 PImage img;
 PImage img0;
  
-
 void setup() {
   size(972,600);
   background(50,50,50);
   papel_fundo();
   
   img = loadImage("centro_Fpolis.png");
-  
  
- 
-   table = new Table();
+  table = new Table();
   table.addColumn("id");
   table.addColumn("coordX");
   table.addColumn("coordY");
@@ -42,37 +38,27 @@ void setup() {
   tableOut.addColumn("id");
   tableOut.addColumn("coordX1");
   tableOut.addColumn("coordY1");
-  
-  
-  //////////////////////////////////////////////
- 
- 
-  
-
-  
 }
 
 void draw() {
  textSize(14);
  fill(200,200,200);
-     rect(50,50,50,50);
-       vert2 = v;
-      aux = aux +20;
-    if (v > tamanho){
-      v = 0;}
-      textSize(20);
-      fill(123,34,13);
-       text (v, 65,80);
-       
-
- 
- 
+ rect(50,50,50,50);
+ vert2 = v;
+ aux = aux +20;
+ if (v > tamanho){
+      v = 0;
+ }
+ textSize(20);
+ fill(123,34,13);
+ text (v, 65,80);
+      
 }
 void mouseClicked() {
 x = mouseX;
 y= mouseY;
 
- TableRow newRow = table.addRow();
+TableRow newRow = table.addRow();
 newRow.setInt("id", table.getRowCount() - 1  );
 newRow.setInt("coordX", x);
 newRow.setInt("coordY", y);
