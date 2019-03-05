@@ -7,7 +7,9 @@ Execução do Projeto para gerar Uma Minimum Spanning Tree, a partir de grafos:
 ## Procedimento
 
 1- Execute o programa no processing para fazer os testes.
+
 2- Clique na tela a posiçao desejada para os vertices.
+
 3- Dois modos para inserir as arestas:
 
     a)  De todos os vertices para todos os vertices:
